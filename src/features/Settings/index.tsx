@@ -8,7 +8,6 @@ function Settings() {
   return (
     <View style={styles.container}>
       <Text>{t('settings')}</Text>
-      <Button title={t('english')} onPress={() => i18n.changeLanguage('en')} />
       <Button title={t('danish')} onPress={() => i18n.changeLanguage('da')} />
     </View>
   );

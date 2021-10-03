@@ -15,7 +15,7 @@ const App = () => {
     <NavigationContainer>
       <Tab.Navigator initialRouteName="home">
         <Tab.Screen
-          name="home"
+          name={t('iq96')}
           component={Home}
           options={{
             tabBarLabel: t('home'),
@@ -30,7 +30,7 @@ const App = () => {
           }}
         />
         <Tab.Screen
-          name="settings"
+          name={t('settings')}
           component={Settings}
           options={{
             tabBarLabel: t('settings'),
