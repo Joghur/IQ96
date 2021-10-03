@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-easy-icon';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useTranslation} from 'react-i18next';
 import Home from './features/Home';
+import Events from './features/Events';
 import Settings from './features/Settings';
 import './i18n';
 
@@ -20,9 +21,22 @@ const App = () => {
           options={{
             tabBarLabel: t('home'),
             tabBarIcon: ({focused, color, size}) => (
-              <Icon
+              <MaterialCommunityIcons
                 name={focused ? 'home' : 'home-outline'}
-                type="material-community"
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name={t('events')}
+          component={Events}
+          options={{
+            tabBarLabel: t('events'),
+            tabBarIcon: ({focused, color, size}) => (
+              <MaterialCommunityIcons
+                name={focused ? 'home' : 'home-outline'}
                 size={size}
                 color={color}
               />
@@ -35,9 +49,8 @@ const App = () => {
           options={{
             tabBarLabel: t('settings'),
             tabBarIcon: ({focused, color, size}) => (
-              <Icon
+              <MaterialCommunityIcons
                 name={focused ? 'cog' : 'cog-outline'}
-                type="material-community"
                 size={size}
                 color={color}
               />
