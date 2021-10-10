@@ -1,6 +1,5 @@
 import React, {memo} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
-
 import Banner from '../../components/Banner';
 import Colors from '../../constants/colors';
 
@@ -8,7 +7,7 @@ function Chat() {
   return (
     <View style={styles.container}>
       <Banner>
-        <Text>Chat</Text>
+        <Text>Bibliotheket</Text>
       </Banner>
       <Text>Coming up</Text>
     </View>

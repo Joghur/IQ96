@@ -1,7 +1,8 @@
 import React, {memo, useEffect, useState} from 'react';
-// import {useTranslation} from 'react-i18next';
 import {StyleSheet, View, Image, Text, FlatList} from 'react-native';
 import {getFirestore, collection, getDocs} from 'firebase/firestore/lite';
+
+import Banner from '../../components/Banner';
 import Colors from '../../constants/colors';
 import {app} from '../../utils/firebase';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
@@ -18,7 +19,6 @@ type Event = {
 };
 
 function Events() {
-  //   const {t} = useTranslation();
   const db = getFirestore(app);
 
   const initEvent = {
@@ -58,18 +58,9 @@ function Events() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Image
-          style={styles.tinyLogo}
-          source={require('../../images/iqlogo_512.png')}
-        />
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View>
-            <Text style={styles.headerText}>Næste begivenheder</Text>
-          </View>
-          <View style={{flex: 1, height: 1, backgroundColor: 'black'}} />
-        </View>
-      </View>
+      <Banner>
+        <Text>Næste begivenheder</Text>
+      </Banner>
       <View style={styles.listContainer}>
         {events.length > 0 && (
           <FlatList

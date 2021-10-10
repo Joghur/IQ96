@@ -32,6 +32,7 @@
     "react-native-safe-area-context": "^3.3.0",
     "react-native-screens": "^3.5.0",
     "react-native-vector-icons": "^8.1.0",
+    "short-uuid": "^4.2.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

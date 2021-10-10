@@ -1,6 +1,7 @@
 import React, {memo} from 'react';
 import {useTranslation} from 'react-i18next';
 import {StyleSheet, Text, View} from 'react-native';
+
 import Colors from '../../constants/colors';
 
 function Home() {

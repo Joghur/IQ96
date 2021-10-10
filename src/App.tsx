@@ -6,6 +6,8 @@ import {useTranslation} from 'react-i18next';
 import Home from './features/Home';
 import Events from './features/Events';
 import Chat from './features/Chat';
+import Library from './features/Library';
+import Members from './features/Members';
 import Settings from './features/Settings';
 import './i18n';
 
@@ -35,6 +37,34 @@ const App = () => {
           component={Events}
           options={{
             tabBarLabel: t('events'),
+            tabBarIcon: ({focused, color, size}) => (
+              <MaterialCommunityIcons
+                name={focused ? 'home' : 'home-outline'}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name={t('members')}
+          component={Members}
+          options={{
+            tabBarLabel: t('members'),
+            tabBarIcon: ({focused, color, size}) => (
+              <MaterialCommunityIcons
+                name={focused ? 'home' : 'home-outline'}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name={t('library')}
+          component={Library}
+          options={{
+            tabBarLabel: t('library'),
             tabBarIcon: ({focused, color, size}) => (
               <MaterialCommunityIcons
                 name={focused ? 'home' : 'home-outline'}
