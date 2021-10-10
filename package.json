@@ -1,13 +1,15 @@
 {
   "name": "iq96",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
+    "build": "cd android && ./gradlew bundleRelease && npm run openLinuxMintWindow",
+    "openLinuxMintWindow": "nemo ./app/build/outputs/bundle/release/",
     "start:reset": "yarn start --reset-cache",
-    "clear-cache": "rm -rf node_modules && yarn install && yarn start --reset-cache && rm -rf /tmp/metro-*",
+    "clear-cache": "rm -rf node_modules && yarn install && rm -rf /tmp/metro-* && cd android && ./gradlew clean",
     "start": "react-native start",
     "lint": "yarn tsc && eslint . --ext .js,.ts,.tsx --cache",
     "rename": "npx react-native-rename ",

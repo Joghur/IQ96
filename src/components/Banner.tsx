@@ -10,7 +10,7 @@ const Banner = props => {
       />
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <View>
-          <Text style={styles.headerText}>{props.children}</Text>
+          <Text style={styles.headerText}>{props.label}</Text>
         </View>
         <View style={{flex: 1, height: 1, backgroundColor: 'black'}} />
       </View>

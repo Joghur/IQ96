@@ -7,3 +7,10 @@ It will be an attempt at being TDD and will contain more branches a development 
  1. basic - Fresh Typescript React Native app where **linting** and **testing** is set up correctly
  3. navigation - React Navigation
  2. firebaseAuth - As above and Firebase authentication
+
+
+### building
+For building use:
+>npm run build
+
+This is for linux mint. It will open up a window using *nemo*.

@@ -7,9 +7,7 @@ import Colors from '../../constants/colors';
 function Chat() {
   return (
     <View style={styles.container}>
-      <Banner>
-        <Text>Chat</Text>
-      </Banner>
+      <Banner label={'Chat'} />
       <Text>Coming up</Text>
     </View>
   );

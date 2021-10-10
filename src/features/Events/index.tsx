@@ -1,6 +1,7 @@
 import React, {memo, useEffect, useState} from 'react';
 import {StyleSheet, View, Image, Text, FlatList} from 'react-native';
 import {getFirestore, collection, getDocs} from 'firebase/firestore/lite';
+import short from 'short-uuid';
 
 import Banner from '../../components/Banner';
 import Colors from '../../constants/colors';
@@ -58,18 +59,16 @@ function Events() {
 
   return (
     <View style={styles.container}>
-      <Banner>
-        <Text>Næste begivenheder</Text>
-      </Banner>
+      <Banner label={'Næste begivenheder'} />
       <View style={styles.listContainer}>
         {events.length > 0 && (
           <FlatList
             data={events}
-            keyExtractor={ev => ev.id}
+            keyExtractor={(ev: Event) => ev.id}
             renderItem={({item}) => (
               <Text
                 style={styles.listText}
-                onPress={item => {
+                onPress={(item: Event) => {
                   console.log('events[item.id]', events[item.id]);
                   setEvent(events[item.id]);
                 }}>

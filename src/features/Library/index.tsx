@@ -1,14 +1,13 @@
 import React, {memo} from 'react';
 import {StyleSheet, View, Text} from 'react-native';
+
 import Banner from '../../components/Banner';
 import Colors from '../../constants/colors';
 
 function Chat() {
   return (
     <View style={styles.container}>
-      <Banner>
-        <Text>Bibliotheket</Text>
-      </Banner>
+      <Banner label={'Bibliotheket'} />
       <Text>Coming up</Text>
     </View>
   );
