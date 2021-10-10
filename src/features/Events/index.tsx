@@ -10,8 +10,8 @@ type Event = {
   id?: string;
   city: string;
   country: string;
-  endDate: datetime;
-  startDate: datetime;
+  endDate: Date;
+  startDate: Date;
   locale: string;
   type: string;
   year: number;
@@ -42,7 +42,7 @@ function Events() {
         const eventsSnapshot = await getDocs(eventsCollection);
         setEvents(
           eventsSnapshot.docs.map(doc => {
-            const obj: Event = doc.data();
+            const obj = doc.data() as Event;
             obj.id = doc.id;
             return obj;
           }),

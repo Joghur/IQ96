@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {useTranslation} from 'react-i18next';
 import Home from './features/Home';
 import Events from './features/Events';
+import Chat from './features/Chat';
 import Settings from './features/Settings';
 import './i18n';
 
@@ -34,6 +35,20 @@ const App = () => {
           component={Events}
           options={{
             tabBarLabel: t('events'),
+            tabBarIcon: ({focused, color, size}) => (
+              <MaterialCommunityIcons
+                name={focused ? 'home' : 'home-outline'}
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name={t('chat')}
+          component={Chat}
+          options={{
+            tabBarLabel: t('chat'),
             tabBarIcon: ({focused, color, size}) => (
               <MaterialCommunityIcons
                 name={focused ? 'home' : 'home-outline'}
