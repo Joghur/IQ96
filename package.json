@@ -7,7 +7,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "build": "cd android && ./gradlew bundleRelease && npm run openLinuxMintWindow",
-    "openLinuxMintWindow": "nemo ./app/build/outputs/bundle/release/",
+    "openLinuxMintWindow": "nemo ./app/build/outputs/bundle/release",
     "start:reset": "yarn start --reset-cache",
     "clear-cache": "rm -rf node_modules && yarn install && rm -rf /tmp/metro-* && cd android && ./gradlew clean",
     "start": "react-native start",
