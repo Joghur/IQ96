@@ -1,38 +1,19 @@
 import React from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
-import Pdf from 'react-native-pdf';
+import {Button, StyleSheet, View} from 'react-native';
 
 import Banner from '../../../components/Banner';
 import Colors from '../../../constants/colors';
 import LETTERS from './lettersArray';
+import {convertEpochSecondsToDateString} from '../../../utils/dates';
 
-const source = {
-  uri: LETTERS[0],
-  cache: true,
-};
-
-function Letters() {
+function Letters({navigation}: any) {
   return (
     <View style={styles.container}>
       <Banner label={'IQ Breve'} />
-      <View style={styles.pdfContainer}>
-        <Pdf
-          source={source}
-          onLoadComplete={(numberOfPages, filePath) => {
-            console.log(`number of pages: ${numberOfPages}`);
-          }}
-          onPageChanged={(page, numberOfPages) => {
-            console.log(`current page: ${page}`);
-          }}
-          onError={error => {
-            console.log(error);
-          }}
-          onPressLink={uri => {
-            console.log(`Link presse: ${uri}`);
-          }}
-          style={styles.pdf}
-        />
-      </View>
+      <Button
+        title={convertEpochSecondsToDateString(LETTERS[0].date, 'D/MMMM-YYYY')}
+        onPress={() => navigation.navigate('PdfScreen', {media: LETTERS[0]})}
+      />
     </View>
   );
 }
@@ -44,16 +25,5 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 10,
     backgroundColor: Colors.aliceBlue,
-  },
-  pdfContainer: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    marginTop: 25,
-  },
-  pdf: {
-    flex: 1,
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
   },
 });

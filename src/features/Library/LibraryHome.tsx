@@ -4,7 +4,7 @@ import {Button, StyleSheet, Text, View} from 'react-native';
 import Banner from '../../components/Banner';
 import Colors from '../../constants/colors';
 
-function LibraryHome({navigation}) {
+function LibraryHome({navigation}: any) {
   return (
     <View style={styles.container}>
       <Banner label={'Bibliotheket'} />

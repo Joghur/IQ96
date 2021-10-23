@@ -3,6 +3,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import LibraryHome from './LibraryHome';
 import Letters from './Letters';
+import PdfScreen from './Letters/PdfScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,11 @@ const Library = () => {
         options={stackoptions}
       />
       <Stack.Screen name="Letters" component={Letters} options={stackoptions} />
+      <Stack.Screen
+        name="PdfScreen"
+        component={PdfScreen}
+        options={stackoptions}
+      />
     </Stack.Navigator>
   );
 };
