@@ -2,7 +2,7 @@ import React from 'react';
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import Pdf from 'react-native-pdf';
 
-import {convertEpochSecondsToDateString} from '../../../utils/dates';
+import {convertEpochSecondsToDateString} from '../utils/dates';
 
 const PdfScreen = ({route}: any) => {
   const {media} = route.params;
@@ -13,7 +13,11 @@ const PdfScreen = ({route}: any) => {
   };
   return (
     <>
-      <Text>{convertEpochSecondsToDateString(media.date, 'D/MMMM-YYYY')}</Text>
+      {media.date && (
+        <Text>
+          {convertEpochSecondsToDateString(media.date, 'D/MMMM-YYYY')}
+        </Text>
+      )}
       <View style={styles.pdfContainer}>
         <Pdf
           source={source}

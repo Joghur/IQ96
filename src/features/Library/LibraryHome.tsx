@@ -1,15 +1,35 @@
 import React from 'react';
-import {Button, StyleSheet, Text, View} from 'react-native';
+import {Button, StyleSheet, View} from 'react-native';
 
 import Banner from '../../components/Banner';
 import Colors from '../../constants/colors';
+import {SONG} from './song';
 
 function LibraryHome({navigation}: any) {
   return (
     <View style={styles.container}>
       <Banner label={'Bibliotheket'} />
-      <Text>Coming up</Text>
       <Button title="IQ Breve" onPress={() => navigation.navigate('Letters')} />
+      <Button
+        title="Love og Vedtægter"
+        onPress={() => navigation.navigate('Laws')}
+      />
+      <Button
+        title="IQ Sangen"
+        onPress={() =>
+          navigation.navigate('PdfScreen', {
+            media: SONG,
+          })
+        }
+      />
+      <Button
+        title="GF referat"
+        onPress={() => navigation.navigate('Summary')}
+      />
+      <Button
+        title="De hellige Annaler"
+        onPress={() => navigation.navigate('Logs')}
+      />
     </View>
   );
 }

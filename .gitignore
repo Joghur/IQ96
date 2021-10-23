@@ -65,3 +65,5 @@ src/utils/firebaseConfig.js
 src/features/Library/Images/imagesArray.js
 
 src/features/Library/Letters/lettersArray.js
+
+src/features/Library/song.js
