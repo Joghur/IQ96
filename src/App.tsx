@@ -68,12 +68,7 @@ const App = () => {
             headerShown: false,
             tabBarIcon: ({focused, color, size}) => (
               <MaterialCommunityIcons
-                name={
-                  focused ? 'library-shelves' : 'library'
-                  //   focused
-                  //     ? 'pencil-box-multiple'
-                  //     : 'pencil-box-multiple-outline'
-                }
+                name={focused ? 'library-shelves' : 'library'}
                 size={size}
                 color={color}
               />

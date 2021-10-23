@@ -1,7 +1,15 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 
-const Banner = props => {
+const Banner = (props: {
+  label:
+    | boolean
+    | React.ReactChild
+    | React.ReactFragment
+    | React.ReactPortal
+    | null
+    | undefined;
+}) => {
   return (
     <View style={styles.headerContainer}>
       <Image

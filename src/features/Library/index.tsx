@@ -1,24 +1,24 @@
-import React, {memo} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import React from 'react';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import Banner from '../../components/Banner';
-import Colors from '../../constants/colors';
+import LibraryHome from './LibraryHome';
+import Letters from './Letters';
 
-function Chat() {
+const Stack = createNativeStackNavigator();
+
+const stackoptions = {headerShown: false};
+
+const Library = () => {
   return (
-    <View style={styles.container}>
-      <Banner label={'Bibliotheket'} />
-      <Text>Coming up</Text>
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="LibraryHome"
+        component={LibraryHome}
+        options={stackoptions}
+      />
+      <Stack.Screen name="Letters" component={Letters} options={stackoptions} />
+    </Stack.Navigator>
   );
-}
+};
 
-export default memo(Chat);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingLeft: 10,
-    backgroundColor: Colors.aliceBlue,
-  },
-});
+export default Library;
