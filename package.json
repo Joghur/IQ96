@@ -12,7 +12,6 @@
     "clear-cache": "rm -rf node_modules && npm install && rm -rf /tmp/metro-* && cd android && ./gradlew clean",
     "start": "react-native start",
     "lint": "npm tsc && eslint . --ext .js,.ts,.tsx --cache",
-    "rename": "npx react-native-rename ",
     "test": "jest --verbose --coverage",
     "test:update": "jest --verbose --coverage --updateSnapshot",
     "test:watch": "jest --verbose --watch"
@@ -34,7 +33,6 @@
     "react-native-gesture-handler": "^1.10.3",
     "react-native-pdf": "^6.3.0",
     "react-native-reanimated": "^2.2.0",
-    "react-native-rename": "^2.9.0",
     "react-native-safe-area-context": "^3.3.2",
     "react-native-screens": "^3.8.0",
     "react-native-vector-icons": "^8.1.0",

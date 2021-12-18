@@ -10,10 +10,10 @@ function LibraryHome({navigation}: any) {
     <View style={styles.container}>
       <Banner label={'Bibliotheket'} />
       <Button title="IQ Breve" onPress={() => navigation.navigate('Letters')} />
-      <Button
+      {/* <Button
         title="Love og Vedtægter"
         onPress={() => navigation.navigate('Laws')}
-      />
+      /> */}
       <Button
         title="IQ Sangen"
         onPress={() =>
@@ -22,14 +22,14 @@ function LibraryHome({navigation}: any) {
           })
         }
       />
-      <Button
+      {/* <Button
         title="GF referat"
         onPress={() => navigation.navigate('Summary')}
-      />
-      <Button
+      /> */}
+      {/* <Button
         title="De hellige Annaler"
         onPress={() => navigation.navigate('Logs')}
-      />
+      /> */}
     </View>
   );
 }

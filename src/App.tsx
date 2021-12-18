@@ -6,10 +6,10 @@ import {useTranslation} from 'react-i18next';
 
 import Home from './features/Home';
 import Events from './features/Events';
-import Chat from './features/Chat';
+// import Chat from './features/Chat';
 import Library from './features/Library';
-import Members from './features/Members';
-import Settings from './features/Settings';
+// import Members from './features/Members';
+// import Settings from './features/Settings';
 
 import './i18n';
 
@@ -47,7 +47,7 @@ const App = () => {
             ),
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name={t('members')}
           component={Members}
           options={{
@@ -60,7 +60,7 @@ const App = () => {
               />
             ),
           }}
-        />
+        /> */}
         <Tab.Screen
           name={t('library')}
           component={Library}
@@ -75,7 +75,7 @@ const App = () => {
             ),
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name={t('chat')}
           component={Chat}
           options={{
@@ -88,8 +88,8 @@ const App = () => {
               />
             ),
           }}
-        />
-        <Tab.Screen
+        /> */}
+        {/* <Tab.Screen
           name={t('settings')}
           component={Settings}
           options={{
@@ -102,7 +102,7 @@ const App = () => {
               />
             ),
           }}
-        />
+        /> */}
       </Tab.Navigator>
     </NavigationContainer>
   );
