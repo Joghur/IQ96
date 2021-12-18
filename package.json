@@ -1,6 +1,6 @@
 {
   "name": "iq96",
-  "version": "0.0.3",
+  "version": "1.0.4",
   "private": true,
   "scripts": {
     "tsc": "./node_modules/typescript/bin/tsc",

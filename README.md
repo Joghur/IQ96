@@ -14,3 +14,9 @@ For building use:
 >npm run build
 
 This is for linux mint. It will open up a window using *nemo*.
+
+### Versioning
+
+To change these App bundle values, you need to edit
+
+    android/app/build.gradle
