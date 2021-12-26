@@ -6,6 +6,7 @@ import {convertEpochSecondsToDateString} from '../utils/dates';
 
 const PdfScreen = ({route}: any) => {
   const {media} = route.params;
+  console.log('PdfScreen, media.uri', media.uri);
 
   const source = {
     uri: media.uri,
@@ -18,15 +19,17 @@ const PdfScreen = ({route}: any) => {
           {convertEpochSecondsToDateString(media.date, 'D/MMMM-YYYY')}
         </Text>
       )}
-      <View style={styles.pdfContainer}>
-        <Pdf
-          source={source}
-          onError={error => {
-            console.log(error);
-          }}
-          style={styles.pdf}
-        />
-      </View>
+      {media.uri && (
+        <View style={styles.pdfContainer}>
+          <Pdf
+            source={source}
+            onError={error => {
+              console.log('PDF error', error);
+            }}
+            style={styles.pdf}
+          />
+        </View>
+      )}
     </>
   );
 };
