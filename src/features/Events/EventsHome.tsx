@@ -8,8 +8,8 @@ import {
   QuerySnapshot,
   doc,
   col,
-
 } from 'firebase/firestore/lite';
+import {fetchAll} from '../../utils/db';
 import short from 'short-uuid';
 
 import Banner from '../../components/Banner';
@@ -20,8 +20,6 @@ import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {EventType} from '../../types/Event';
 
 const EventsHome: React.FunctionComponent = ({navigation}) => {
-  const db = getFirestore(app);
-
   const initEvent: EventType = {
     id: '',
     city: '',
@@ -38,19 +36,8 @@ const EventsHome: React.FunctionComponent = ({navigation}) => {
 
   useEffect(() => {
     const eventsList = async () => {
-      try {
-        const eventsCollection = collection(db, 'events');
-        const eventsSnapshot = await getDocs(eventsCollection);
-        setEvents(
-          eventsSnapshot.docs.map(doc => {
-            const obj = doc.data();
-            obj.id = doc.id;
-            return obj;
-          }),
-        );
-      } catch (e) {
-        console.error('Error fetching documents: ', e);
-      }
+      const eventData = await fetchAll('events');
+      setEvents(eventData.success);
     };
     eventsList();
   }, []);
@@ -62,7 +49,7 @@ const EventsHome: React.FunctionComponent = ({navigation}) => {
     <View style={styles.container}>
       <Banner label={'Næste begivenheder'} />
       <View style={styles.listContainer}>
-        {events.length > 0 && (
+        {events?.length > 0 && (
           <FlatList
             data={events}
             keyExtractor={(ev: Event) => ev.id}
@@ -70,7 +57,11 @@ const EventsHome: React.FunctionComponent = ({navigation}) => {
               <Text
                 style={styles.listText}
                 onPress={() => {
-                  setEvent(events.filter(event => event.id === item.id)[0]);
+                  setEvent(
+                    !event.id
+                      ? events.filter(event => event.id === item.id)[0]
+                      : [],
+                  );
                 }}>
                 {convertEpochSecondsToDateString(
                   item?.startDate?.seconds,

@@ -2,58 +2,35 @@ import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {CustomDivider} from '../../utils/ui';
-import {app} from '../../utils/firebase';
+import {fetchData} from '../../utils/db';
 import {EventType} from '../../types/Event';
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  where,
-} from 'firebase/firestore/lite';
-import {MeetingPointType} from '../../types/MeetingPoint';
+// import {MeetingPointType} from '../../types/MeetingPoint';
 import {ActivityType} from '../../types/Activity';
 
 const EventPage: React.FunctionComponent<{event: EventType}> = ({event}) => {
-  const db = getFirestore(app);
-
   const [meetingPoints, setMeetingPoints] = useState<MeetingPointType[]>([]);
   const [activities, setActivities] = useState<ActivityType[]>([]);
 
   console.log('meetingPoints', meetingPoints);
   console.log('activities', activities);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const meetingPointsCollection = query(
-          collection(db, 'meetingPoints'),
-          where('type', '==', 'transport'),
-        );
-        const meetingPointsSnapshot = await getDocs(meetingPointsCollection);
-        setMeetingPoints(
-          meetingPointsSnapshot.docs.map(doc => {
-            const obj = doc.data();
-            obj.id = doc.id;
-            return obj;
-          }),
-        );
-        const activitiesCollection = query(
-          collection(db, 'actions'),
-          where('eventId', '==', event.id),
-        );
-        const activitiesSnapshot = await getDocs(activitiesCollection);
-        setActivities(
-          activitiesSnapshot.docs.map(doc => {
-            const obj = doc.data();
-            obj.id = doc.id;
-            return obj;
-          }),
-        );
-      } catch (e) {
-        console.error('Error fetching documents: ', e);
-      }
+    const fetch = async () => {
+      const meetingPointData = await fetchData(
+        'meetingPoints',
+        'type',
+        '==',
+        'transport',
+      );
+      const activityData = await fetchData(
+        'actions',
+        'eventId',
+        '==',
+        event.id,
+      );
+      setMeetingPoints(meetingPointData.success);
+      setActivities(activityData.success);
     };
-    fetchData();
+    fetch();
   }, []);
 
   return (
@@ -81,29 +58,27 @@ const EventPage: React.FunctionComponent<{event: EventType}> = ({event}) => {
           )}
         </>
       )}
-      {meetingPoints.length > 0 && (
+      {meetingPoints?.length > 0 && (
         <>
           <CustomDivider />
           <Text style={styles.headLine}>Mødesteder</Text>
           {meetingPoints.map(point => (
-            <>
-              <Text key={point.id}>{`${
-                point.point
-              } kl: ${convertEpochSecondsToDateString(
+            <View key={point.id}>
+              <Text>{`${point.point} kl: ${convertEpochSecondsToDateString(
                 point.time.seconds,
                 'h:mm',
               )}`}</Text>
-            </>
+            </View>
           ))}
         </>
       )}
-      {activities.length > 0 && (
+      {activities?.length > 0 && (
         <>
           <CustomDivider />
           <Text style={styles.headLine}>Aktiviteter</Text>
           {activities.map(point => (
             <>
-              <View style={styles.eventContainer} key={point.id}>
+              <View key={point.id} style={styles.eventContainer}>
                 <Text>{`${point.title} kl: ${convertEpochSecondsToDateString(
                   point.time.seconds,
                   'h:mm',
@@ -129,6 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: '90%',
     marginHorizontal: 5,
+    paddingVertical: 5,
     elevation: 7,
     backgroundColor: 'white',
   },
