@@ -1,15 +1,6 @@
 import React, {memo, useEffect, useState} from 'react';
 import {FlatList, Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  QuerySnapshot,
-  doc,
-  col,
-} from 'firebase/firestore/lite';
-import {fetchAll} from '../../utils/db';
+import {fetchAll, saveData} from '../../utils/db';
 import short from 'short-uuid';
 
 import Banner from '../../components/Banner';
@@ -18,63 +9,81 @@ import Colors from '../../constants/colors';
 import {app} from '../../utils/firebase';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {EventType} from '../../types/Event';
+import AddEvent from './AddEvent';
+import FloatingButton from '../../components/FloatingButton';
 
 const EventsHome: React.FunctionComponent = ({navigation}) => {
   const initEvent: EventType = {
     id: '',
-    city: '',
+    type: '',
+    city: 'Kokkedal',
     country: 'da',
     endDate: new Date(0),
     startDate: new Date(0),
-    locale: '',
-    type: '',
+    timezone: 'Europe/Copenhagen',
     year: 0,
   };
 
   const [events, setEvents] = useState<EventType[]>([]);
   const [event, setEvent] = useState<EventType>(initEvent);
+  const [page, setPage] = useState('main');
 
   useEffect(() => {
     const eventsList = async () => {
       const eventData = await fetchAll('events');
-      setEvents(eventData.success);
+      if (eventData?.success) {
+        setEvents(eventData.success);
+      } else {
+        console.log('Error happened in EventsHome: ', eventData?.error);
+      }
     };
     eventsList();
-  }, []);
+  }, [page]);
 
   console.log('1- events', events);
   console.log('2- event.id', event.id);
 
+  const handleAddEvent = params => {
+    console.log('handleAddEvent');
+  };
+
   return (
     <View style={styles.container}>
       <Banner label={'Næste begivenheder'} />
-      <View style={styles.listContainer}>
-        {events?.length > 0 && (
-          <FlatList
-            data={events}
-            keyExtractor={(ev: Event) => ev.id}
-            renderItem={({item}) => (
-              <Text
-                style={styles.listText}
-                onPress={() => {
-                  setEvent(
-                    !event.id
-                      ? events.filter(event => event.id === item.id)[0]
-                      : [],
-                  );
-                }}>
-                {convertEpochSecondsToDateString(
-                  item?.startDate?.seconds,
-                  'D/MMMM',
-                )}
-                {' - '}
-                {item.type} {item.type === 'tour' && item.city}{' '}
-              </Text>
-            )}
-          />
-        )}
-      </View>
+      {page === 'main' && (
+        <View style={styles.listContainer}>
+          {events?.length > 0 && (
+            <FlatList
+              data={events}
+              keyExtractor={(ev: Event) => ev.id}
+              renderItem={({item}) => (
+                <Text
+                  style={styles.listText}
+                  onPress={() => {
+                    setEvent(
+                      !event.id
+                        ? events.filter(event => event.id === item.id)[0]
+                        : [],
+                    );
+                  }}>
+                  {convertEpochSecondsToDateString(
+                    item?.startDate?.seconds,
+                    'D/MMMM',
+                  )}
+                  {' - '}
+                  {item.type} {item.type === 'tour' && item.city}{' '}
+                </Text>
+              )}
+            />
+          )}
+          {events?.length === 0 && (
+            <Text>Ingen begivenheder eller intet internet</Text>
+          )}
+        </View>
+      )}
+      {page === 'add' && <AddEvent backLink={() => setPage('main')} />}
       {!!event.id && <Event event={event} />}
+      {page !== 'add' && <FloatingButton onAdd={() => setPage('add')} />}
     </View>
   );
 };

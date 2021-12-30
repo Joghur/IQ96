@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
-import {CustomDivider} from '../../utils/ui';
+import {CustomDivider} from '../../components/CustomDivider';
 import {fetchData} from '../../utils/db';
 import {EventType} from '../../types/Event';
-// import {MeetingPointType} from '../../types/MeetingPoint';
+import {MeetingPointType} from '../../types/MeetingPoint';
 import {ActivityType} from '../../types/Activity';
 
 const EventPage: React.FunctionComponent<{event: EventType}> = ({event}) => {

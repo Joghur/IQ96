@@ -4,7 +4,7 @@ export type EventType = {
   country: string;
   endDate: Date;
   startDate: Date;
-  locale: string;
+  timezone: string;
   type: string;
   year: number;
 };

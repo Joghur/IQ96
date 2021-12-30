@@ -1,12 +1,15 @@
 import moment from 'moment';
 import 'moment/locale/da';
-import 'moment/locale/fi';
+import 'moment-timezone';
 
 export const convertEpochSecondsToDateString = (
   epochSeconds,
-  format = 'D/MMMM-YYYY h:mm',
-  locale = 'da',
+  format = 'D/MMMM-YYYY HH:mm',
+  timezone = 'Europe/Copenhagen',
 ) => {
-  moment.locale(locale);
-  return moment(epochSeconds * 1000).format(format);
+  console.log('timezone ------------', timezone);
+  moment.locale('da');
+  return moment(epochSeconds * 1000)
+    .tz(timezone)
+    .format(format);
 };
