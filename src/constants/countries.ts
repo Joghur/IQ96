@@ -6,7 +6,7 @@ export const countries = [
   {country: 'Tyskland', timezone: 'Europe/Berlin'},
   {country: 'Storbritannien', timezone: 'Europe/London'},
   {country: 'Belgien', timezone: 'Europe/Brussels'},
-  {country: 'Estland', timezone: 'Europe/Talinn'},
+  {country: 'Estland', timezone: 'Europe/Tallinn'},
   {country: 'Finland', timezone: 'Europe/Helsinki'},
   {country: 'Frankrig', timezone: 'Europe/Paris'},
   {country: 'Grækenland', timezone: 'Europe/Athens'},

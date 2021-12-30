@@ -1,5 +1,14 @@
 import React, {memo, useEffect, useState} from 'react';
-import {FlatList, Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {
+  FlatList,
+  Image,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {fetchAll, saveData} from '../../utils/db';
 import short from 'short-uuid';
 
@@ -10,7 +19,9 @@ import {app} from '../../utils/firebase';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {EventType} from '../../types/Event';
 import AddEvent from './AddEvent';
-import FloatingButton from '../../components/FloatingButton';
+// import {CustomSpeedDial} from '../../components/CustomSpeedDial';
+import {handleType} from '../../utils/convertEventType';
+import {FAB} from 'react-native-elements';
 
 const EventsHome: React.FunctionComponent = ({navigation}) => {
   const initEvent: EventType = {
@@ -31,6 +42,9 @@ const EventsHome: React.FunctionComponent = ({navigation}) => {
   useEffect(() => {
     const eventsList = async () => {
       const eventData = await fetchAll('events');
+
+      // const sortedData = eventData.sort(())
+
       if (eventData?.success) {
         setEvents(eventData.success);
       } else {
@@ -40,62 +54,59 @@ const EventsHome: React.FunctionComponent = ({navigation}) => {
     eventsList();
   }, [page]);
 
-  const handleType = type => {
-    switch (type) {
-      case 'tour':
-        return 'Tour';
-      case 'fg':
-        return 'Frisbee Golf';
-      case 'ol':
-        return 'Ølympiske Lege';
-      case 'gf':
-        return 'Generalforsamling';
-      default:
-        return 'Andet arrangement';
-    }
-  };
-
   console.log('1- events', events);
   console.log('2- event.id', event.id);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Banner label={'Næste begivenheder'} />
       {page === 'main' && (
-        <View style={styles.listContainer}>
+        <View>
           {events?.length > 0 && (
             <FlatList
               data={events}
               keyExtractor={(ev: Event) => ev.id}
               renderItem={({item}) => (
-                <Text
-                  style={styles.listText}
-                  onPress={() => {
-                    setEvent(
-                      !event.id
-                        ? events.filter(event => event.id === item.id)[0]
-                        : [],
-                    );
-                  }}>
-                  {convertEpochSecondsToDateString(
-                    item?.startDate?.seconds,
-                    'D/MMMM',
-                  )}
-                  {' - '}
-                  {handleType(item.type)} {item.type === 'tour' && item.city}{' '}
-                </Text>
+                <View style={styles.listItemContainer}>
+                  <Text
+                    style={styles.listText}
+                    onPress={() => {
+                      setEvent(
+                        () => events.filter(event => event.id === item.id)[0],
+                      );
+                    }}>
+                    <Text style={styles.bold}>
+                      {convertEpochSecondsToDateString(
+                        item?.startDate?.seconds,
+                        'D/MMMM-YYYY',
+                      )}
+                    </Text>
+                    {' - '}
+                    {handleType(item.type)} {item.type === 'tour' && item.city}{' '}
+                  </Text>
+                </View>
               )}
             />
           )}
           {events?.length === 0 && (
             <Text>Ingen begivenheder eller intet internet</Text>
           )}
+          {!!event.id && <Event event={event} />}
         </View>
       )}
       {page === 'add' && <AddEvent backLink={() => setPage('main')} />}
-      {!!event.id && <Event event={event} />}
-      {page !== 'add' && <FloatingButton onAdd={() => setPage('add')} />}
-    </View>
+      {page !== 'add' && (
+        <FAB
+          placement="right"
+          icon={{
+            name: 'add',
+            color: Colors.white,
+          }}
+          onPress={() => setPage('add')}
+          style={{zIndex: 1000}}
+        />
+      )}
+    </SafeAreaView>
   );
 };
 
@@ -107,6 +118,9 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     backgroundColor: Colors.aliceBlue,
   },
+  bold: {
+    fontWeight: 'bold',
+  },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -117,7 +131,7 @@ const styles = StyleSheet.create({
     width: 250,
     textAlign: 'center',
   },
-  listContainer: {
+  listItemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -126,14 +140,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: '90%',
     marginHorizontal: 5,
-    marginVertical: 5,
+    marginVertical: 10,
     paddingVertical: 10,
     elevation: 7,
     backgroundColor: 'white',
   },
   listText: {
     paddingLeft: 10,
-    fontSize: 20,
+    fontSize: 15,
   },
   tinyLogo: {
     alignItems: 'flex-start',

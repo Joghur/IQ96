@@ -2,7 +2,7 @@ import React from 'react';
 import {SpeedDial} from 'react-native-elements';
 import Colors from '../constants/colors';
 
-export default ({onDelete, onEdit, onAdd}) => {
+export const CustomSpeedDial = ({onDelete, onEdit, onAdd}) => {
   const [open, setOpen] = React.useState(false);
 
   const handlePress = fn => {
@@ -14,7 +14,7 @@ export default ({onDelete, onEdit, onAdd}) => {
     <SpeedDial
       isOpen={open}
       icon={{
-        name: 'edit',
+        name: onAdd && !onEdit && !onDelete ? 'add' : 'edit',
         color: Colors.white,
       }}
       openIcon={{name: 'close', color: Colors.white}}

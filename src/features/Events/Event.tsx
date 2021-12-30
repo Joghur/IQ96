@@ -6,6 +6,7 @@ import {fetchData} from '../../utils/db';
 import {EventType} from '../../types/Event';
 import {MeetingPointType} from '../../types/MeetingPoint';
 import {ActivityType} from '../../types/Activity';
+import {handleType} from '../../utils/convertEventType';
 
 const EventPage: React.FunctionComponent<{event: EventType}> = ({event}) => {
   const [meetingPoints, setMeetingPoints] = useState<MeetingPointType[]>([]);
@@ -35,7 +36,7 @@ const EventPage: React.FunctionComponent<{event: EventType}> = ({event}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headLine}>{`Event: ${event.type}`}</Text>
+      <Text style={styles.headLine}>{`Event: ${handleType(event.type)}`}</Text>
       <Text>{`By: ${event.city}`}</Text>
       {(event.startDate || event.endDate) && (
         <>
@@ -104,9 +105,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: '90%',
     marginHorizontal: 5,
+    marginTop: 10,
     paddingVertical: 5,
     elevation: 7,
     backgroundColor: 'white',
+    zIndex: -1,
   },
   headLine: {
     fontWeight: 'bold',

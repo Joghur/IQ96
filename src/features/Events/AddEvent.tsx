@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Platform, StyleSheet, View} from 'react-native';
+import {Platform, ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Input, Text} from 'react-native-elements';
 import {EventType} from '../../types/Event';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -7,7 +7,7 @@ import ModalSelector from 'react-native-modal-selector';
 import {countries} from '../../constants/countries';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
-import {saveData} from '../../utils/db'
+import {saveData} from '../../utils/db';
 
 const initialEvent: EventType = {
   type: '',
@@ -40,6 +40,12 @@ const typeSelectData = [
     selectorType: 'type',
     label: 'Frisbee Golf',
     dbKey: 'fg',
+  },
+  {
+    key: typeIndex++,
+    selectorType: 'type',
+    label: 'Andet arrangement',
+    dbKey: 'andet',
   },
 ];
 
@@ -88,11 +94,10 @@ const AddEvent = ({backLink}) => {
     }
   };
 
-  const handleSubmit =async (params) => {
-      await saveData("events", event)
-      backLink()
-  }
-  
+  const handleSubmit = async params => {
+    await saveData('events', event);
+    backLink();
+  };
 
   const showPicker = (value: startOrEndDates) => {
     console.log('showPicker value-------------', value);
@@ -126,134 +131,134 @@ const AddEvent = ({backLink}) => {
 
   return (
     <View>
-      <View style={styles.buttonContainer}>
-        <Button
-          icon={<Icon name="arrow-left" size={15} color="red" />}
-          title="Tilbage"
-          type="clear"
-          raised
-          containerStyle={styles.containerStyle}
-          onPress={() => backLink()}
-        />
-      </View>
-      <View style={styles.headerTextContainer}>
-        <Text h3 style={styles.headerText}>
-          Tilføj ny begivenhed
-        </Text>
-      </View>
-      <View style={styles.selectDropdown}>
-        <View style={styles.icon}>
-          <Icon name="event" size={24} color="black" />
-        </View>
-        <ModalSelector
-          data={typeSelectData}
-          initValue="Begivenhed"
-          onChange={option => {
-            handleChange(option);
-          }}
-        />
-      </View>
-      <Input
-        value={event.city}
-        placeholder="Indtast destinations by"
-        leftIcon={<Icon name="location-city" size={24} color="black" />}
-        // errorStyle={{color: 'red'}}
-        // errorMessage="Dette felt skal udfyldes"
-        onChangeText={value =>
-          handleChange({dbKey: value, selectorType: 'city'})
-        }
-      />
-      <View style={styles.selectDropdown}>
-        <View style={styles.icon}>
-          <Icon name="flag" size={24} color="black" />
-        </View>
-        <ModalSelector
-          data={countryLocale}
-          initValue={event.country}
-          onChange={option => {
-            handleChange(option);
-          }}
-        />
-      </View>
-
-      <View style={styles.dateContainer}>
-        <Icon name="flight-takeoff" size={24} color="black" />
-        <View style={styles.btnContainer}>
+      <ScrollView>
+        <View style={styles.buttonContainer}>
           <Button
-            icon={{
-              name: 'sentiment-very-satisfied',
-              size: 18,
-              color: 'green',
-            }}
-            title="Start dato"
-            onPress={() => showPicker('startDate')}
+            icon={<Icon name="arrow-left" size={15} color="red" />}
+            title="Tilbage"
+            type="clear"
+            raised
+            containerStyle={styles.containerStyle}
+            onPress={() => backLink()}
           />
         </View>
-        <View on style={styles.pickedDateContainer}>
-          {!!event.startDate && (
-            <Text
-              style={styles.pickedDate}
-              onPress={() => showPicker('startDate')}>
-              {`${convertEpochSecondsToDateString(
-                event.startDate.getTime() / 1000,
-                'D/MMMM-YYYY HH:mm',
-                event.timezone,
-              )}`}
-            </Text>
-          )}
+        <View style={styles.headerTextContainer}>
+          <Text h3 style={styles.headerText}>
+            Tilføj ny begivenhed
+          </Text>
         </View>
-      </View>
-      <View style={styles.dateContainer}>
-        <Icon name="flight-land" size={24} color="black" />
-        <View style={styles.btnContainer}>
-          <Button
-            icon={{
-              name: 'sick',
-              size: 18,
-              color: 'red',
+        <View style={styles.selectDropdown}>
+          <View style={styles.icon}>
+            <Icon name="event" size={24} color="black" />
+          </View>
+          <ModalSelector
+            data={typeSelectData}
+            initValue="Begivenhed"
+            onChange={option => {
+              handleChange(option);
             }}
-            title="Slut dato"
-            onPress={() => showPicker('endDate')}
           />
         </View>
-        <View on style={styles.pickedDateContainer}>
-          {!!event.endDate && (
-            <Text
-              style={styles.pickedDate}
-              onPress={() => showPicker('endDate')}>
-              {`${convertEpochSecondsToDateString(
-                event.endDate.getTime() / 1000,
-                'D/MMMM-YYYY HH:mm',
-                event.timezone,
-              )}`}
-            </Text>
-          )}
+        <Input
+          value={event.city}
+          placeholder="Indtast destinations by"
+          leftIcon={<Icon name="location-city" size={24} color="black" />}
+          onChangeText={value =>
+            handleChange({dbKey: value, selectorType: 'city'})
+          }
+        />
+        <View style={styles.selectDropdown}>
+          <View style={styles.icon}>
+            <Icon name="flag" size={24} color="black" />
+          </View>
+          <ModalSelector
+            data={countryLocale}
+            initValue={event.country}
+            onChange={option => {
+              handleChange(option);
+            }}
+          />
         </View>
 
-        {isDatePickerShow && (
-          <DateTimePicker
-            value={date}
-            mode={'datetime'}
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            is24Hour={true}
-            onChange={value => onChangeDate(value)}
-            style={styles.datePicker}
-          />
-        )}
-        {isTimePickerShow && (
-          <DateTimePicker
-            value={date}
-            mode={'time'}
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            is24Hour={true}
-            onChange={value => onChangeDate(value)}
-            style={styles.datePicker}
-          />
-        )}
-      </View>
-      <Button onPress={() => handleSubmit()}>
-        Tilføj begivenhed
-      </Button>
+        <View style={styles.dateContainer}>
+          <Icon name="flight-takeoff" size={24} color="black" />
+          <View style={styles.btnContainer}>
+            <Button
+              icon={{
+                name: 'sentiment-very-satisfied',
+                size: 18,
+                color: 'green',
+              }}
+              title="Start dato"
+              onPress={() => showPicker('startDate')}
+            />
+          </View>
+          <View on style={styles.pickedDateContainer}>
+            {!!event.startDate && (
+              <Text
+                style={styles.pickedDate}
+                onPress={() => showPicker('startDate')}>
+                {`${convertEpochSecondsToDateString(
+                  event.startDate.getTime() / 1000,
+                  'D/MMMM-YYYY HH:mm',
+                  event.timezone,
+                )}`}
+              </Text>
+            )}
+          </View>
+        </View>
+        <View style={styles.dateContainer}>
+          <Icon name="flight-land" size={24} color="black" />
+          <View style={styles.btnContainer}>
+            <Button
+              icon={{
+                name: 'sick',
+                size: 18,
+                color: 'red',
+              }}
+              title="Slut dato"
+              onPress={() => showPicker('endDate')}
+            />
+          </View>
+          <View on style={styles.pickedDateContainer}>
+            {!!event.endDate && (
+              <Text
+                style={styles.pickedDate}
+                onPress={() => showPicker('endDate')}>
+                {convertEpochSecondsToDateString(
+                  event.endDate.getTime() / 1000,
+                  'D/MMMM-YYYY HH:mm',
+                  event.timezone,
+                )}
+              </Text>
+            )}
+          </View>
+
+          {isDatePickerShow && (
+            <DateTimePicker
+              value={date}
+              mode={'datetime'}
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              is24Hour={true}
+              onChange={value => onChangeDate(value)}
+              style={styles.datePicker}
+            />
+          )}
+          {isTimePickerShow && (
+            <DateTimePicker
+              value={date}
+              mode={'time'}
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              is24Hour={true}
+              onChange={value => onChangeDate(value)}
+              style={styles.datePicker}
+            />
+          )}
+        </View>
+        <View style={styles.submitButton}>
+          <Button onPress={() => handleSubmit()}>Tilføj begivenhed</Button>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -301,5 +306,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-start',
+  },
+  submitButton: {
+    height: '100%',
   },
 });
