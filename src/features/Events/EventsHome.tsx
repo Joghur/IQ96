@@ -40,12 +40,23 @@ const EventsHome: React.FunctionComponent = ({navigation}) => {
     eventsList();
   }, [page]);
 
+  const handleType = type => {
+    switch (type) {
+      case 'tour':
+        return 'Tour';
+      case 'fg':
+        return 'Frisbee Golf';
+      case 'ol':
+        return 'Ølympiske Lege';
+      case 'gf':
+        return 'Generalforsamling';
+      default:
+        return 'Andet arrangement';
+    }
+  };
+
   console.log('1- events', events);
   console.log('2- event.id', event.id);
-
-  const handleAddEvent = params => {
-    console.log('handleAddEvent');
-  };
 
   return (
     <View style={styles.container}>
@@ -71,7 +82,7 @@ const EventsHome: React.FunctionComponent = ({navigation}) => {
                     'D/MMMM',
                   )}
                   {' - '}
-                  {item.type} {item.type === 'tour' && item.city}{' '}
+                  {handleType(item.type)} {item.type === 'tour' && item.city}{' '}
                 </Text>
               )}
             />
