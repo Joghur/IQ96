@@ -9,7 +9,7 @@ import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {EventType} from '../../types/Event';
 import AddEvent from './AddEvent';
 import {handleType} from '../../utils/convertEventType';
-import {Icon, Overlay} from 'react-native-elements';
+import {FAB, Icon, Overlay} from 'react-native-elements';
 
 const EventsHome: React.FunctionComponent = () => {
   const initEvent: EventType = {
@@ -50,19 +50,19 @@ const EventsHome: React.FunctionComponent = () => {
 
   console.log('1- events', events);
   console.log('2- event.id', event?.id);
+  console.log('3- page', page);
 
   return (
     <SafeAreaView style={styles.container}>
       <Banner label={'Næste begivenheder'} />
       {page !== 'add' && (
-        <View style={styles.floatinButtonContainer}>
-          <Icon
-            style={styles.floatingButton}
-            name="add"
-            reverse
-            color={Colors.darkCharcoal}
-          />
-        </View>
+        <FAB
+          icon={{name: 'add', color: Colors.aliceBlue}}
+          style={styles.floatingButton}
+          placement="right"
+          color={"black"}
+          onPress={() => setPage('add')}
+        />
       )}
       <View>
         {page === 'main' && (
@@ -138,14 +138,10 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     fontSize: 15,
   },
-  floatinButtonContainer: {
-    top: -35,
-    alignItems: 'flex-end',
-    height: 15,
-    zIndex: 1000,
-  },
   floatingButton: {
-    position: 'absolute',
+    zIndex: 999,
+    borderRadius: 50,
+    borderWidth: 10,
   },
   overlay: {
     borderRadius: 50,
