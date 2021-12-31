@@ -60,52 +60,55 @@ const EventsHome: React.FunctionComponent = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <Banner label={'Næste begivenheder'} />
-      {page === 'main' && (
-        <View>
-          {events?.length > 0 && (
-            <FlatList
-              data={events}
-              keyExtractor={(ev: Event) => ev.id}
-              renderItem={({item}) => (
-                <View style={styles.listItemContainer}>
-                  <Text
-                    style={styles.listText}
-                    onPress={() => {
-                      setEvent(
-                        () => events.filter(event => event.id === item.id)[0],
-                      );
-                    }}>
-                    <Text style={styles.bold}>
-                      {convertEpochSecondsToDateString(
-                        item?.startDate?.seconds,
-                        'D/MMMM-YYYY',
-                      )}
+      <View>
+        {page === 'main' && (
+          <View>
+            {events?.length > 0 && (
+              <FlatList
+                data={events}
+                keyExtractor={(ev: Event) => ev.id}
+                renderItem={({item}) => (
+                  <View style={styles.listItemContainer}>
+                    <Text
+                      style={styles.listText}
+                      onPress={() => {
+                        setEvent(
+                          () => events.filter(event => event.id === item.id)[0],
+                        );
+                      }}>
+                      <Text style={styles.bold}>
+                        {convertEpochSecondsToDateString(
+                          item?.startDate?.seconds,
+                          'D/MMMM-YYYY',
+                        )}
+                      </Text>
+                      {' - '}
+                      {handleType(item.type)}{' '}
+                      {item.type === 'tour' && item.city}{' '}
                     </Text>
-                    {' - '}
-                    {handleType(item.type)} {item.type === 'tour' && item.city}{' '}
-                  </Text>
-                </View>
-              )}
-            />
-          )}
-          {events?.length === 0 && (
-            <Text>Ingen begivenheder eller intet internet</Text>
-          )}
-          {!!event.id && <Event event={event} />}
-        </View>
-      )}
-      {page === 'add' && <AddEvent backLink={() => setPage('main')} />}
-      {page !== 'add' && (
-        <FAB
-          placement="right"
-          icon={{
-            name: 'add',
-            color: Colors.white,
-          }}
-          onPress={() => setPage('add')}
-          style={{zIndex: 1000}}
-        />
-      )}
+                  </View>
+                )}
+              />
+            )}
+            {events?.length === 0 && (
+              <Text>Ingen begivenheder eller intet internet</Text>
+            )}
+            {!!event.id && <Event event={event} />}
+          </View>
+        )}
+        {page === 'add' && <AddEvent backLink={() => setPage('main')} />}
+        {page !== 'add' && (
+          <FAB
+            placement="right"
+            icon={{
+              name: 'add',
+              color: Colors.white,
+            }}
+            onPress={() => setPage('add')}
+            style={{zIndex: 1000}}
+          />
+        )}
+      </View>
     </SafeAreaView>
   );
 };

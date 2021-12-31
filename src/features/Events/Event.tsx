@@ -37,29 +37,29 @@ const EventPage: React.FunctionComponent<{event: EventType}> = ({event}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.headLine}>{`Event: ${handleType(event.type)}`}</Text>
-      <Text>{`By: ${event.city}`}</Text>
-      {(event.startDate || event.endDate) && (
+      {!!event.city && <Text>{`By: ${event.city}`}</Text>}
+      {(!!event.startDate || !!event.endDate) && (
         <>
           <CustomDivider />
-          {event?.startDate && (
+          {!!event?.startDate && (
             <Text>
               {`Start: ${convertEpochSecondsToDateString(
-                event?.startDate?.seconds,
+                event.startDate?.seconds,
                 'dddd D/MMMM h:mm',
               )}`}
             </Text>
           )}
-          {event?.endDate && (
+          {!!event?.endDate && (
             <Text>
               {`Slut: ${convertEpochSecondsToDateString(
-                event?.endDate?.seconds,
+                event.endDate?.seconds,
                 'dddd D/MMMM h:mm',
               )}`}
             </Text>
           )}
         </>
       )}
-      {meetingPoints?.length > 0 && (
+      {!!meetingPoints?.length > 0 && (
         <>
           <CustomDivider />
           <Text style={styles.headLine}>Mødesteder</Text>
@@ -73,7 +73,7 @@ const EventPage: React.FunctionComponent<{event: EventType}> = ({event}) => {
           ))}
         </>
       )}
-      {activities?.length > 0 && (
+      {!!activities?.length > 0 && (
         <>
           <CustomDivider />
           <Text style={styles.headLine}>Aktiviteter</Text>
