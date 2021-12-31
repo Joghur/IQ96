@@ -99,17 +99,12 @@ export default EventPage;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    justifyContent: 'center',
     borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 20,
     width: '90%',
     marginHorizontal: 5,
-    marginTop: 10,
-    paddingVertical: 5,
-    elevation: 7,
+    marginVertical: 10,
+    paddingVertical: 10,
     backgroundColor: 'white',
-    zIndex: -1,
   },
   headLine: {
     fontWeight: 'bold',
