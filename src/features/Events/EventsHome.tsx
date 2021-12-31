@@ -9,7 +9,7 @@ import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {EventType} from '../../types/Event';
 import AddEvent from './AddEvent';
 import {handleType} from '../../utils/convertEventType';
-import {FAB, Icon, Overlay} from 'react-native-elements';
+import {FAB, Overlay} from 'react-native-elements';
 
 const EventsHome: React.FunctionComponent = () => {
   const initEvent: EventType = {
@@ -60,7 +60,7 @@ const EventsHome: React.FunctionComponent = () => {
           icon={{name: 'add', color: Colors.aliceBlue}}
           style={styles.floatingButton}
           placement="right"
-          color={"black"}
+          color={'black'}
           onPress={() => setPage('add')}
         />
       )}
