@@ -7,7 +7,8 @@ import ModalSelector from 'react-native-modal-selector';
 import {countries} from '../../constants/countries';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
-import {saveData} from '../../utils/db';
+import {editDocument, saveData} from '../../utils/db';
+import {handleType} from '../../utils/convertEventType';
 
 const initialEvent: EventType = {
   type: '',
@@ -51,8 +52,10 @@ const typeSelectData = [
 
 type startOrEndDates = 'startDate' | 'endDate';
 
-const AddEvent = ({backLink}) => {
-  const [event, setEvent] = useState(initialEvent);
+const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
+  const [event, setEvent] = useState(
+    Object.keys(editableEvent).length > 0 ? editableEvent : initialEvent,
+  );
   const [countryLocale, setCountryLocale] = useState([]);
   const [isDatePickerShow, setIsDatePickerShow] = useState(false);
   const [isTimePickerShow, setIsTimePickerShow] = useState(false);
@@ -63,6 +66,9 @@ const AddEvent = ({backLink}) => {
   console.log('isDatePickerShow', isDatePickerShow);
   console.log('date', date);
   console.log('isStartOrEnd', isStartOrEnd);
+  console.log('editableEvent', editableEvent);
+  console.log('editable', editable);
+  console.log('backLink', backLink);
 
   useEffect(() => {
     const countrySelectData = countries.map((country, index) => {
@@ -95,8 +101,19 @@ const AddEvent = ({backLink}) => {
   };
 
   const handleSubmit = async params => {
-    await saveData('events', event);
+    console.log('1');
+    if (editable) {
+      console.log('2');
+      await editDocument('events', event.id, event);
+      console.log('3');
+    } else {
+      console.log('4');
+      await saveData('events', event);
+      console.log('5');
+    }
+    console.log('6');
     backLink();
+    console.log('7');
   };
 
   const showPicker = (value: startOrEndDates) => {
@@ -153,7 +170,7 @@ const AddEvent = ({backLink}) => {
           </View>
           <ModalSelector
             data={typeSelectData}
-            initValue="Begivenhed"
+            initValue={event?.type ? handleType(event?.type) : 'Begivenhed'}
             onChange={option => {
               handleChange(option);
             }}
@@ -190,16 +207,19 @@ const AddEvent = ({backLink}) => {
                 color: 'green',
               }}
               title="Start dato"
+              type="outline"
               onPress={() => showPicker('startDate')}
             />
           </View>
           <View on style={styles.pickedDateContainer}>
-            {!!event.startDate && (
+            {!!event?.startDate && (
               <Text
                 style={styles.pickedDate}
                 onPress={() => showPicker('startDate')}>
                 {`${convertEpochSecondsToDateString(
-                  event.startDate.getTime() / 1000,
+                  event.startDate?.seconds
+                    ? event.startDate.seconds
+                    : event.startDate.getTime() / 1000,
                   'D/MMMM-YYYY HH:mm',
                   event.timezone,
                 )}`}
@@ -216,17 +236,20 @@ const AddEvent = ({backLink}) => {
                 size: 18,
                 color: 'red',
               }}
+              type="outline"
               title="Slut dato"
               onPress={() => showPicker('endDate')}
             />
           </View>
           <View on style={styles.pickedDateContainer}>
-            {!!event.endDate && (
+            {!!event?.endDate && (
               <Text
                 style={styles.pickedDate}
                 onPress={() => showPicker('endDate')}>
                 {convertEpochSecondsToDateString(
-                  event.endDate.getTime() / 1000,
+                  event.endDate?.seconds
+                    ? event.endDate.seconds
+                    : event.endDate.getTime() / 1000,
                   'D/MMMM-YYYY HH:mm',
                   event.timezone,
                 )}
@@ -237,7 +260,7 @@ const AddEvent = ({backLink}) => {
           {isDatePickerShow && (
             <DateTimePicker
               value={date}
-              mode={'datetime'}
+              mode={'date'}
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
               is24Hour={true}
               onChange={value => onChangeDate(value)}
@@ -256,7 +279,7 @@ const AddEvent = ({backLink}) => {
           )}
         </View>
         <View style={styles.submitButton}>
-          <Button onPress={() => handleSubmit()}>Tilføj begivenhed</Button>
+          <Button title="Tilføj begivenhed" onPress={() => handleSubmit()} />
         </View>
       </ScrollView>
     </View>
@@ -280,7 +303,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   icon: {
-    paddingHorizontal: 10,
+    paddingRight: 7,
   },
   dateContainer: {
     display: 'flex',
@@ -308,6 +331,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   submitButton: {
-    height: '100%',
+    alignItems: 'flex-end',
+    marginTop: 20,
+    marginRight: 10,
   },
 });

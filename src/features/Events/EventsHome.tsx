@@ -65,6 +65,11 @@ const EventsHome: React.FunctionComponent = () => {
     setVisible(false);
   };
 
+  const onEdit = () => {
+    setPage('edit');
+    setVisible(false);
+  };
+
   const onDelete = () => {
     Alert.alert(
       'Fjern begivenhed',
@@ -82,12 +87,13 @@ const EventsHome: React.FunctionComponent = () => {
 
   console.log('1- events', events);
   console.log('2- event.id', event?.id);
+  console.log('2b- event', event);
   console.log('3- page', page);
 
   return (
     <SafeAreaView style={styles.container}>
       <Banner label={'Næste begivenheder'} />
-      {page !== 'add' && (
+      {page !== 'add' && page !== 'edit' && (
         <FAB
           icon={{name: 'add', color: Colors.aliceBlue}}
           style={styles.floatingButton}
@@ -109,15 +115,17 @@ const EventsHome: React.FunctionComponent = () => {
                       style={styles.listText}
                       onPress={() => toggleOverlay(item)}>
                       <Text style={styles.bold}>
-                        {convertEpochSecondsToDateString(
-                          item?.startDate?.seconds,
-                          'D/MMMM-YYYY',
-                        )}
+                        {item?.startDate?.seconds
+                          ? convertEpochSecondsToDateString(
+                              item.startDate.seconds,
+                              'D/MMMM-YYYY',
+                            )
+                          : 'Ukendt dato'}
                       </Text>
                       <Text>
                         {' '}
                         {handleType(item.type)}
-                        {item.type === 'tour' && item.city}
+                        {item.type === 'tour' && ` de ${item.city}`}
                       </Text>
                     </Text>
                   </View>
@@ -131,11 +139,20 @@ const EventsHome: React.FunctionComponent = () => {
               isVisible={visible}
               onBackdropPress={toggleOverlay}
               overlayStyle={styles.overlay}>
-              {!!event?.id && <Event event={event} onDelete={onDelete} />}
+              {!!event?.id && (
+                <Event event={event} onDelete={onDelete} onEdit={onEdit} />
+              )}
             </Overlay>
           </View>
         )}
         {page === 'add' && <AddEvent backLink={() => setPage('main')} />}
+        {page === 'edit' && (
+          <AddEvent
+            backLink={() => setPage('main')}
+            editable
+            editableEvent={event}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

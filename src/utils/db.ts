@@ -7,6 +7,7 @@ import {
   doc,
   query,
   where,
+  updateDoc,
 } from 'firebase/firestore/lite';
 import {app} from '../utils/firebase';
 
@@ -92,6 +93,21 @@ export const deleteCollection = async (collectionName, docId) => {
 
   try {
     await deleteDoc(doc(db, collectionName, docId));
+    result.success = 'true';
+  } catch (e) {
+    console.error('Error fetching documents: ', e);
+    result.error = e;
+  }
+  return result;
+};
+
+export const editDocument = async (collectionName, docId, data) => {
+  const db = getFirestore(app);
+
+  const result = {success: null, error: null};
+
+  try {
+    await updateDoc(doc(db, collectionName, docId), data);
     result.success = 'true';
   } catch (e) {
     console.error('Error fetching documents: ', e);
