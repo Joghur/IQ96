@@ -1,5 +1,12 @@
 import React, {memo, useEffect, useState} from 'react';
-import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {fetchAll} from '../../utils/db';
 
 import Banner from '../../components/Banner';
@@ -10,6 +17,7 @@ import {EventType} from '../../types/Event';
 import AddEvent from './AddEvent';
 import {handleType} from '../../utils/convertEventType';
 import {FAB, Overlay} from 'react-native-elements';
+import {deleteCollection} from '../../utils/db';
 
 const EventsHome: React.FunctionComponent = () => {
   const initEvent: EventType = {
@@ -46,6 +54,30 @@ const EventsHome: React.FunctionComponent = () => {
   const toggleOverlay = item => {
     setEvent(events.filter(event => event.id === item.id)[0]);
     setVisible(!visible);
+  };
+
+  const handleDelete = () => {
+    deleteCollection('events', event.id);
+    setEvents(oldEvents => {
+      return oldEvents.filter(oldEvent => event.id !== oldEvent.id);
+    });
+    setEvent(initEvent);
+    setVisible(false);
+  };
+
+  const onDelete = () => {
+    Alert.alert(
+      'Fjern begivenhed',
+      'Er du sikker på at du vil slette denne begivenhed?',
+      [
+        {
+          text: 'Fortryd',
+          onPress: () => setVisible(false),
+          style: 'cancel',
+        },
+        {text: 'Ja', onPress: () => handleDelete()},
+      ],
+    );
   };
 
   console.log('1- events', events);
@@ -99,7 +131,7 @@ const EventsHome: React.FunctionComponent = () => {
               isVisible={visible}
               onBackdropPress={toggleOverlay}
               overlayStyle={styles.overlay}>
-              {!!event?.id && <Event event={event} />}
+              {!!event?.id && <Event event={event} onDelete={onDelete} />}
             </Overlay>
           </View>
         )}

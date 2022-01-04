@@ -3,6 +3,8 @@ import {
   getFirestore,
   getDocs,
   addDoc,
+  deleteDoc,
+  doc,
   query,
   where,
 } from 'firebase/firestore/lite';
@@ -76,6 +78,21 @@ export const fetchAll = async collectionName => {
       obj.id = doc.id;
       return obj;
     });
+  } catch (e) {
+    console.error('Error fetching documents: ', e);
+    result.error = e;
+  }
+  return result;
+};
+
+export const deleteCollection = async (collectionName, docId) => {
+  const db = getFirestore(app);
+
+  const result = {success: null, error: null};
+
+  try {
+    await deleteDoc(doc(db, collectionName, docId));
+    result.success = 'true';
   } catch (e) {
     console.error('Error fetching documents: ', e);
     result.error = e;
