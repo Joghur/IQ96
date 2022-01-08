@@ -44,7 +44,9 @@ function Images() {
                 onLoadStart={() => setLoading(true)}
                 onLoadEnd={() => setLoading(false)}
               />
-              {loading && <ActivityIndicator color="green" size="large" />}
+              {loading && (
+                <ActivityIndicator color={Colors.success} size="large" />
+              )}
             </View>
           );
         })}
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingLeft: 10,
-    backgroundColor: Colors.aliceBlue,
+    backgroundColor: Colors.light,
   },
 
   ImageContainer: {
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   Image: {
-    shadowColor: 'black',
+    shadowColor: Colors.dark,
     shadowOffset: {
       width: -10,
       height: 9,

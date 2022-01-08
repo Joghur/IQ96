@@ -1,6 +1,6 @@
 import Colors from './colors';
 
 test('colors', () => {
-  expect(Colors.aliceBlue).toBe('#F5FCFF');
-  expect(Colors.darkCharcoal).toBe('#333333');
+  expect(Colors.light).toBe('#F5FCFF');
+  expect(Colors.dark).toBe('#333333');
 });

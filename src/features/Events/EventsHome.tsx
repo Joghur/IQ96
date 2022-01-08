@@ -40,12 +40,15 @@ const EventsHome: React.FunctionComponent = () => {
     const eventsList = async () => {
       const eventData = await fetchAll('events');
 
-      // const sortedData = eventData.sort(())
-
+      console.log('eventData ----------', eventData);
       if (eventData?.success) {
-        setEvents(eventData.success);
+        const sortedData: EventType[] = eventData.success.sort((a, b) => {
+          return a.startDate - b.startDate;
+        });
+        setEvents(sortedData);
       } else {
-        console.log('Error happened in EventsHome: ', eventData?.error);
+        console.log('Error happened in EventsHome: ', eventData.error);
+        Alert.alert('Kunne ikke hente begivenheds data');
       }
     };
     eventsList();
@@ -95,10 +98,16 @@ const EventsHome: React.FunctionComponent = () => {
       <Banner label={'Næste begivenheder'} />
       {page !== 'add' && page !== 'edit' && (
         <FAB
-          icon={{name: 'add', color: Colors.aliceBlue}}
+          icon={{name: 'add', size: 24, color: Colors.button}}
+          buttonStyle={{
+            backgroundColor: Colors.white,
+            borderRadius: 50,
+            borderColor: Colors.button,
+          }}
           style={styles.floatingButton}
+          titleStyle={{backgroundColor: 'red'}}
           placement="right"
-          color={'black'}
+          color={Colors.dark}
           onPress={() => setPage('add')}
         />
       )}
@@ -164,7 +173,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingLeft: 10,
-    backgroundColor: Colors.aliceBlue,
+    backgroundColor: Colors.light,
   },
   bold: {
     fontWeight: 'bold',
@@ -181,7 +190,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     paddingVertical: 10,
     elevation: 7,
-    backgroundColor: 'white',
+    backgroundColor: Colors.white,
   },
   listText: {
     paddingLeft: 10,
@@ -189,8 +198,6 @@ const styles = StyleSheet.create({
   },
   floatingButton: {
     zIndex: 999,
-    borderRadius: 50,
-    borderWidth: 10,
   },
   overlay: {
     borderRadius: 50,

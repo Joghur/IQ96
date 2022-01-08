@@ -1,6 +1,8 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 
+import Colors from '../constants/colors';
+
 const Banner = (props: {
   label:
     | boolean
@@ -20,7 +22,7 @@ const Banner = (props: {
         <View>
           <Text style={styles.headerText}>{props.label}</Text>
         </View>
-        <View style={{flex: 1, height: 1, backgroundColor: 'black'}} />
+        <View style={{flex: 1, height: 1, backgroundColor: Colors.dark}} />
       </View>
     </View>
   );

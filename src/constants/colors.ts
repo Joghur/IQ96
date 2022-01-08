@@ -1,7 +1,11 @@
 const Colors = {
-  aliceBlue: '#F5FCFF',
-  darkCharcoal: '#333333',
-  white: '#fff',
+  dark: '#333333',
+  light: '#F5FCFF',
+  button: '#f50',
+  event: 'red',
+  success: 'green',
+  error: 'red',
+  white: 'white',
 };
 
 export default Colors;

@@ -1,14 +1,16 @@
 import React, {useState, useEffect} from 'react';
 import {Platform, ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Input, Text} from 'react-native-elements';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import ModalSelector from 'react-native-modal-selector';
+
 import {EventType} from '../../types/Event';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import ModalSelector from 'react-native-modal-selector';
 import {countries} from '../../constants/countries';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {editDocument, saveData} from '../../utils/db';
 import {handleType} from '../../utils/convertEventType';
+import Colors from '../../constants/colors';
 
 const initialEvent: EventType = {
   type: '',
@@ -101,19 +103,12 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
   };
 
   const handleSubmit = async params => {
-    console.log('1');
     if (editable) {
-      console.log('2');
       await editDocument('events', event.id, event);
-      console.log('3');
     } else {
-      console.log('4');
       await saveData('events', event);
-      console.log('5');
     }
-    console.log('6');
     backLink();
-    console.log('7');
   };
 
   const showPicker = (value: startOrEndDates) => {
@@ -149,16 +144,7 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
   return (
     <View>
       <ScrollView>
-        <View style={styles.buttonContainer}>
-          <Button
-            icon={<Icon name="arrow-left" size={15} color="red" />}
-            title="Tilbage"
-            type="clear"
-            raised
-            containerStyle={styles.containerStyle}
-            onPress={() => backLink()}
-          />
-        </View>
+        <View style={styles.buttonContainer}></View>
         <View style={styles.headerTextContainer}>
           <Text h3 style={styles.headerText}>
             Tilføj ny begivenhed
@@ -166,7 +152,7 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
         </View>
         <View style={styles.selectDropdown}>
           <View style={styles.icon}>
-            <Icon name="event" size={24} color="black" />
+            <Icon name="event" size={24} color={Colors.dark} />
           </View>
           <ModalSelector
             data={typeSelectData}
@@ -179,14 +165,14 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
         <Input
           value={event.city}
           placeholder="Indtast destinations by"
-          leftIcon={<Icon name="location-city" size={24} color="black" />}
+          leftIcon={<Icon name="location-city" size={24} color={Colors.dark} />}
           onChangeText={value =>
             handleChange({dbKey: value, selectorType: 'city'})
           }
         />
         <View style={styles.selectDropdown}>
           <View style={styles.icon}>
-            <Icon name="flag" size={24} color="black" />
+            <Icon name="flag" size={24} color={Colors.dark} />
           </View>
           <ModalSelector
             data={countryLocale}
@@ -198,13 +184,13 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
         </View>
 
         <View style={styles.dateContainer}>
-          <Icon name="flight-takeoff" size={24} color="black" />
-          <View style={styles.btnContainer}>
+          <Icon name="flight-takeoff" size={24} colo={Colors.dark} />
+          <View style={styles.dateButtonContainer}>
             <Button
               icon={{
                 name: 'sentiment-very-satisfied',
                 size: 18,
-                color: 'green',
+                color: Colors.success,
               }}
               title="Start dato"
               type="outline"
@@ -228,13 +214,13 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
           </View>
         </View>
         <View style={styles.dateContainer}>
-          <Icon name="flight-land" size={24} color="black" />
-          <View style={styles.btnContainer}>
+          <Icon name="flight-land" size={24} color={Colors.dark} />
+          <View style={styles.dateButtonContainer}>
             <Button
               icon={{
                 name: 'sick',
                 size: 18,
-                color: 'red',
+                color: Colors.error,
               }}
               type="outline"
               title="Slut dato"
@@ -278,8 +264,24 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
             />
           )}
         </View>
-        <View style={styles.submitButton}>
-          <Button title="Tilføj begivenhed" onPress={() => handleSubmit()} />
+        <View style={styles.submitButtonContainer}>
+          <Button
+            raised
+            title="Tilbage"
+            buttonStyle={styles.submitButton}
+            type="clear"
+            containerStyle={styles.submitButtonContainer}
+            onPress={() => backLink()}
+          />
+          <Button
+            raised
+            title="Tilføj begivenhed"
+            onPress={() => handleSubmit()}
+            buttonStyle={styles.submitButton}
+            type="clear"
+            containerStyle={styles.submitButtonContainer}
+            titleStyle={styles.submitButtonTitle}
+          />
         </View>
       </ScrollView>
     </View>
@@ -293,7 +295,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerText: {
-    color: 'green',
+    color: Colors.dark,
   },
   selectDropdown: {
     flexDirection: 'row',
@@ -316,9 +318,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   pickedDate: {
-    color: 'black',
+    color: Colors.dark,
   },
-  btnContainer: {
+  dateButtonContainer: {
     width: 120,
     padding: 5,
   },
@@ -331,8 +333,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   submitButton: {
-    alignItems: 'flex-end',
+    width: 150,
+    height: 50,
+    elevation: 1,
+    backgroundColor: 'transparent',
+  },
+  submitButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 20,
     marginRight: 10,
+  },
+  submitButtonTitle: {
+    color: Colors.button,
   },
 });

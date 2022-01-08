@@ -40,6 +40,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingLeft: 10,
-    backgroundColor: Colors.aliceBlue,
+    backgroundColor: Colors.light,
   },
 });

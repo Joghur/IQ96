@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
+import {Icon} from 'react-native-elements';
+
 import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {CustomDivider} from '../../components/CustomDivider';
 import {fetchData} from '../../utils/db';
@@ -7,7 +9,7 @@ import {EventType} from '../../types/Event';
 import {MeetingPointType} from '../../types/MeetingPoint';
 import {ActivityType} from '../../types/Activity';
 import {handleType} from '../../utils/convertEventType';
-import {Icon} from 'react-native-elements';
+import Colors from '../../constants/colors';
 
 const EventPage: React.FunctionComponent<{
   event: EventType;
@@ -17,6 +19,7 @@ const EventPage: React.FunctionComponent<{
   const [meetingPoints, setMeetingPoints] = useState<MeetingPointType[]>([]);
   const [activities, setActivities] = useState<ActivityType[]>([]);
 
+  console.log('EventPage - event', event);
   console.log('meetingPoints', meetingPoints);
   console.log('activities', activities);
   useEffect(() => {
@@ -100,7 +103,7 @@ const EventPage: React.FunctionComponent<{
           raised
           name="edit"
           type="font-awesome"
-          color="#f50"
+          color={Colors.button}
           onPress={() => onEdit()}
         />
 
@@ -108,7 +111,7 @@ const EventPage: React.FunctionComponent<{
           raised
           name="trash"
           type="font-awesome"
-          color="#f50"
+          color={Colors.button}
           onPress={() => onDelete()}
         />
       </View>
@@ -121,19 +124,19 @@ export default EventPage;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    borderColor: 'black',
+    borderColor: Colors.dark,
     width: '90%',
     marginHorizontal: 5,
     marginVertical: 10,
     paddingVertical: 10,
-    backgroundColor: 'white',
+    backgroundColor: Colors.light,
   },
   headLine: {
     fontWeight: 'bold',
   },
   eventContainer: {
     alignItems: 'center',
-    borderColor: 'red',
+    borderColor: Colors.event,
     borderWidth: 1,
     borderRadius: 20,
     width: '80%',
