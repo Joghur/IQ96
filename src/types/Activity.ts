@@ -1,8 +1,6 @@
 export type ActivityType = {
-  id?: string;
-  meetingPoint: string;
-  notes?: string;
-  time: Date;
-  title: string;
-  type: string;
+  meetingPlace?: string;
+  meetingTime?: string;
+  place?: string;
+  time?: string;
 };
