@@ -1,35 +1,43 @@
 import React from 'react';
-import {Button, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
-import Banner from '../../components/Banner';
-import Colors from '../../constants/colors';
 import {SONG} from './song';
+import Banner from '../../components/Banner';
+import {ButtonWithIcon} from '../../components/ButtonWithIcon';
+import Colors from '../../constants/colors';
 
 function LibraryHome({navigation}: any) {
   return (
     <View style={styles.container}>
       <Banner label={'Bibliotheket'} />
-      <Button title="IQ Breve" onPress={() => navigation.navigate('Letters')} />
-      {/* <Button
+      <View style={styles.buttonContainer}>
+        <ButtonWithIcon
+          title="IQ Breve"
+          icon="envelope"
+          onPress={() => navigation.navigate('Letters')}
+        />
+        <ButtonWithIcon
+          title="IQ Sangen"
+          icon="music"
+          onPress={() =>
+            navigation.navigate('PdfScreen', {
+              media: SONG,
+            })
+          }
+        />
+        {/* <Button
         title="Love og Vedtægter"
         onPress={() => navigation.navigate('Laws')}
-      /> */}
-      <Button
-        title="IQ Sangen"
-        onPress={() =>
-          navigation.navigate('PdfScreen', {
-            media: SONG,
-          })
-        }
-      />
-      {/* <Button
+    /> */}
+        {/* <Button
         title="GF referat"
         onPress={() => navigation.navigate('Summary')}
-      /> */}
-      {/* <Button
+    /> */}
+        {/* <Button
         title="De hellige Annaler"
         onPress={() => navigation.navigate('Logs')}
-      /> */}
+    /> */}
+      </View>
     </View>
   );
 }
@@ -41,5 +49,11 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 10,
     backgroundColor: Colors.light,
+  },
+  buttonContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginHorizontal: 30,
   },
 });
