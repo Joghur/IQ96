@@ -19,7 +19,7 @@ export const saveData = async (dataCollection, data) => {
     console.log('Document written with ID: ', docRef.id);
     result.success = docRef.id;
   } catch (e) {
-    console.error('Error adding document: ', e);
+    console.error('saveData - Error adding document: ', e);
     result.error = e;
   }
   return result;
@@ -55,7 +55,7 @@ export const fetchData = async (
       return obj;
     });
   } catch (e) {
-    console.error('Error fetching documents: ', e);
+    console.error('fetchData - Error fetching documents: ', e);
     result.error = e;
   }
   return result;
@@ -80,7 +80,7 @@ export const fetchAll = async collectionName => {
       return obj;
     });
   } catch (e) {
-    console.error('Error fetching documents: ', e);
+    console.error('fetchAll - Error fetching documents: ', e);
     result.error = e;
   }
   return result;
@@ -93,9 +93,9 @@ export const deleteCollection = async (collectionName, docId) => {
 
   try {
     await deleteDoc(doc(db, collectionName, docId));
-    result.success = 'true';
+    result.success = docId;
   } catch (e) {
-    console.error('Error fetching documents: ', e);
+    console.error('deleteCollection - Error deleting document: ', e);
     result.error = e;
   }
   return result;
@@ -108,9 +108,9 @@ export const editDocument = async (collectionName, docId, data) => {
 
   try {
     await updateDoc(doc(db, collectionName, docId), data);
-    result.success = 'true';
+    result.success = docId;
   } catch (e) {
-    console.error('Error fetching documents: ', e);
+    console.error('editDocument - Error updating documents: ', e);
     result.error = e;
   }
   return result;

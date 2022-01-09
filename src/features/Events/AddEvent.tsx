@@ -20,42 +20,59 @@ const initialEvent: EventType = {
   endDate: '',
   timezone: 'Europe/Copenhagen',
   year: 0,
+  activities: `
+  KL. 13 - Guided tur i byen, mødested udenfor hotellet kl. 12:45
+  KL. 18 - Restaurant, mødested udenfor hotellet kl. 17:45
+  `,
+  meetingPoints: `
+  Kokkedal ved Centerpubben kl. 14
+  Hovedbanegården under uret kl. 15
+  `,
 };
 
 let typeIndex = 0;
 const typeSelectData = [
   {key: typeIndex++, section: true, label: 'Begivenhed'},
-  {key: typeIndex++, selectorType: 'type', label: 'Tour', dbKey: 'tour'},
+  {key: typeIndex++, selectorType: 'type', label: 'Tour', dbValue: 'tour'},
   {
     key: typeIndex++,
     selectorType: 'type',
     label: 'Generalforsamling',
-    dbKey: 'gf',
+    dbValue: 'gf',
   },
   {
     key: typeIndex++,
     selectorType: 'type',
     label: 'Ølympiske Lege',
-    dbKey: 'ol',
+    dbValue: 'ol',
   },
   {
     key: typeIndex++,
     selectorType: 'type',
     label: 'Frisbee Golf',
-    dbKey: 'fg',
+    dbValue: 'fg',
   },
   {
     key: typeIndex++,
     selectorType: 'type',
     label: 'Andet arrangement',
-    dbKey: 'andet',
+    dbValue: 'andet',
   },
 ];
 
 type startOrEndDates = 'startDate' | 'endDate';
 
-const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
-  const [event, setEvent] = useState(
+const AddEvent: React.Component<{
+  backLink(): void;
+  editable: boolean;
+  editableEvent: EventType;
+}> = ({
+  backLink,
+  //   addActivity,
+  editable = false,
+  editableEvent = {},
+}) => {
+  const [event, setEvent] = useState<EventType>(
     Object.keys(editableEvent).length > 0 ? editableEvent : initialEvent,
   );
   const [countryLocale, setCountryLocale] = useState([]);
@@ -63,14 +80,18 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
   const [isTimePickerShow, setIsTimePickerShow] = useState(false);
   const [isStartOrEnd, setIsStartOrEnd] =
     useState<startOrEndDates>('startDate');
-  const [date, setDate] = useState(new Date(Date.now()));
+  const [date, setDate] = useState(
+    editableEvent?.startDate?.seconds > 0
+      ? new Date(editableEvent.startDate.seconds * 1000)
+      : new Date(Date.now()),
+  );
   console.log('event', event);
   console.log('isDatePickerShow', isDatePickerShow);
   console.log('date', date);
   console.log('isStartOrEnd', isStartOrEnd);
   console.log('editableEvent', editableEvent);
   console.log('editable', editable);
-  console.log('backLink', backLink);
+  console.log('new Date(Date.now())', new Date(Date.now()));
 
   useEffect(() => {
     const countrySelectData = countries.map((country, index) => {
@@ -81,7 +102,7 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
         key: index,
         selectorType: 'country',
         label: country.country,
-        dbKey: country.country,
+        dbValue: country.country,
         timezone: country.timezone,
       };
     });
@@ -92,7 +113,7 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
     console.log('handleChange, option', option);
     setEvent(oldEvent => ({
       ...oldEvent,
-      [option.selectorType]: option.dbKey,
+      [option.selectorType]: option.dbValue,
     }));
     if (option.timezone) {
       setEvent(oldEvent => ({
@@ -108,7 +129,9 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
     } else {
       await saveData('events', event);
     }
-    backLink();
+    if (backLink) {
+      backLink();
+    }
   };
 
   const showPicker = (value: startOrEndDates) => {
@@ -145,6 +168,25 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
     <View>
       <ScrollView>
         <View style={styles.buttonContainer}></View>
+        <View style={styles.submitButtonContainer}>
+          <Button
+            type="clear"
+            raised
+            title="Tilbage"
+            buttonStyle={styles.submitButton}
+            containerStyle={styles.submitButtonContainer}
+            onPress={() => backLink()}
+          />
+          <Button
+            type="clear"
+            raised
+            title={editable ? 'Opdatér begivenhed' : 'Tilføj begivenhed'}
+            titleStyle={styles.submitButtonTitle}
+            buttonStyle={styles.submitButton}
+            containerStyle={styles.submitButtonContainer}
+            onPress={() => handleSubmit()}
+          />
+        </View>
         <View style={styles.headerTextContainer}>
           <Text h3 style={styles.headerText}>
             Tilføj ny begivenhed
@@ -167,7 +209,7 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
           placeholder="Indtast destinations by"
           leftIcon={<Icon name="location-city" size={24} color={Colors.dark} />}
           onChangeText={value =>
-            handleChange({dbKey: value, selectorType: 'city'})
+            handleChange({dbValue: value, selectorType: 'city'})
           }
         />
         <View style={styles.selectDropdown}>
@@ -264,23 +306,37 @@ const AddEvent = ({backLink, editable = false, editableEvent = {}}) => {
             />
           )}
         </View>
-        <View style={styles.submitButtonContainer}>
-          <Button
-            raised
-            title="Tilbage"
-            buttonStyle={styles.submitButton}
-            type="clear"
-            containerStyle={styles.submitButtonContainer}
-            onPress={() => backLink()}
+        <View on style={styles.inputContainer}>
+          <Input
+            multiline
+            value={event.meetingPoints}
+            placeholder="Mødesteder"
+            leftIcon={
+              <>
+                <Icon name="place" size={24} color={Colors.dark} />
+                <Icon name="groups" size={24} color={Colors.dark} />
+                <Icon name="train" size={24} color={Colors.dark} />
+              </>
+            }
+            onChangeText={value =>
+              handleChange({dbValue: value, selectorType: 'meetingPoints'})
+            }
           />
-          <Button
-            raised
-            title="Tilføj begivenhed"
-            onPress={() => handleSubmit()}
-            buttonStyle={styles.submitButton}
-            type="clear"
-            containerStyle={styles.submitButtonContainer}
-            titleStyle={styles.submitButtonTitle}
+        </View>
+        <View on style={styles.inputContainer}>
+          <Input
+            multiline
+            value={event.activities}
+            placeholder="Aktiviteter"
+            leftIcon={
+              <>
+                <Icon name="nightlife" size={24} color={Colors.dark} />
+                <Icon name="restaurant" size={24} color={Colors.dark} />
+              </>
+            }
+            onChangeText={value =>
+              handleChange({dbValue: value, selectorType: 'activities'})
+            }
           />
         </View>
       </ScrollView>
@@ -333,7 +389,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   submitButton: {
-    width: 150,
+    width: 170,
     height: 50,
     elevation: 1,
     backgroundColor: 'transparent',
@@ -342,10 +398,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginBottom: 10,
     marginRight: 10,
   },
   submitButtonTitle: {
     color: Colors.button,
+  },
+  inputContainer: {
+    marginTop: 10,
   },
 });

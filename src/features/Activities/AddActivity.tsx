@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Input, Text} from 'react-native-elements';
 
-import {ActivityType} from '../../types/Event';
+import {EventActivityType} from '../../types/Event';
+import {ActivityType} from '../../types/Activity';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {countries} from '../../constants/countries';
-import {editDocument, saveData} from '../../utils/db';
+import {fetchData, editDocument, saveData} from '../../utils/db';
 import Colors from '../../constants/colors';
 
 const initialActivity: ActivityType = {
@@ -15,27 +15,53 @@ const initialActivity: ActivityType = {
   time: '',
 };
 
-const AddActivity = ({backLink, editable}) => {
-  const [activity, setActivity] = useState(
-    Object.keys(editable).length > 0 ? editable : initialActivity,
+const AddActivity = ({
+  backLink,
+  editable,
+  editableActivity,
+  editableEvent,
+  setEvent,
+}) => {
+  const [activity, setActivity] = useState<ActivityType>(
+    editable ? editable : initialActivity,
   );
+  const [activities, setActivities] = useState<EventActivityType[]>([]);
   console.log('activity', activity);
   console.log('editable', editable);
-  console.log('backLink', backLink);
+  console.log('editableEvent', editableEvent);
+
+  useEffect(() => {
+    const fetch = async () => {
+      const activityData = await fetchData(
+        'activities',
+        'id',
+        '==',
+        editableEvent.id,
+      );
+      setActivities(activityData.success);
+    };
+    fetch();
+  }, []);
 
   const handleChange = option => {
     console.log('handleChange activity, option', option);
     setActivity(oldActivity => ({
       ...oldActivity,
-      [option.selectorType]: option.dbKey,
+      [option.dbKey]: option.dbValue,
     }));
   };
 
-  const handleSubmit = async params => {
-    if (editable) {
-      await editDocument('events', event.id, event);
+  const handleSubmit = async () => {
+    if (activity?.id) {
+      await editDocument('activities', editableActivity.id, activity);
     } else {
-      await saveData('events', event);
+      await saveData('activities', activity);
+      let activities = [];
+      if (editableEvent?.activities?.length > 0) {
+        activities = editableEvent?.activities;
+      }
+      activities.push(id);
+      setEvent(oldEvent => ({...oldEvent, activities}));
     }
     backLink();
   };
@@ -54,9 +80,14 @@ const AddActivity = ({backLink, editable}) => {
           placeholder="Indtast Mødested"
           leftIcon={<Icon name="location-city" size={24} color={Colors.dark} />}
           onChangeText={value =>
-            handleChange({dbKey: value, dbValue: 'meetingPlace'})
+            handleChange({dbKey: 'meetingPlace', dbValue: value})
           }
         />
+        {activities.map(act => (
+          <Text>
+            {act.id} - {act.name}
+          </Text>
+        ))}
 
         <View style={styles.submitButtonContainer}>
           <Button
@@ -82,7 +113,7 @@ const AddActivity = ({backLink, editable}) => {
   );
 };
 
-export default AddEvent;
+export default AddActivity;
 
 const styles = StyleSheet.create({
   headerTextContainer: {

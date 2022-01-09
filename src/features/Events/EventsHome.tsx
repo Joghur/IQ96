@@ -7,17 +7,17 @@ import {
   Text,
   View,
 } from 'react-native';
-import {fetchAll} from '../../utils/db';
-
-import Banner from '../../components/Banner';
-import Event from './Event';
-import Colors from '../../constants/colors';
-import {convertEpochSecondsToDateString} from '../../utils/dates';
-import {EventType} from '../../types/Event';
-import AddEvent from './AddEvent';
-import {handleType} from '../../utils/convertEventType';
 import {FAB, Overlay} from 'react-native-elements';
-import {deleteCollection} from '../../utils/db';
+
+import AddEvent from './AddEvent';
+import Event from './Event';
+// import AddActivity from '../Activities/AddActivity';
+import Banner from '../../components/Banner';
+import {fetchAll, deleteCollection} from '../../utils/db';
+import {convertEpochSecondsToDateString} from '../../utils/dates';
+import {handleType} from '../../utils/convertEventType';
+import Colors from '../../constants/colors';
+import {EventType} from '../../types/Event';
 
 const EventsHome: React.FunctionComponent = () => {
   const initEvent: EventType = {
@@ -29,6 +29,8 @@ const EventsHome: React.FunctionComponent = () => {
     startDate: new Date(0),
     timezone: 'Europe/Copenhagen',
     year: 0,
+    activities: '',
+    meetingPoints: '',
   };
 
   const [events, setEvents] = useState<EventType[]>([]);
@@ -154,14 +156,28 @@ const EventsHome: React.FunctionComponent = () => {
             </Overlay>
           </View>
         )}
-        {page === 'add' && <AddEvent backLink={() => setPage('main')} />}
+        {page === 'add' && (
+          <AddEvent
+            backLink={() => setPage('main')}
+            // addActivity={() => setPage('activity')}
+          />
+        )}
         {page === 'edit' && (
           <AddEvent
             backLink={() => setPage('main')}
+            // addActivity={() => setPage('activity')}
             editable
             editableEvent={event}
           />
         )}
+        {/* {page === 'activity' && (
+          <AddActivity
+            backLink={() => setPage('edit')}
+            setEvent={setEvent}
+            editable
+            editableEvent={event}
+          />
+        )} */}
       </View>
     </SafeAreaView>
   );

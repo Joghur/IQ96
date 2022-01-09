@@ -7,4 +7,6 @@ export type EventType = {
   timezone: string;
   type: string;
   year: number;
+  activities?: string;
+  meetingPoints: string;
 };
