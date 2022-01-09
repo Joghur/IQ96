@@ -30,7 +30,7 @@ const EventPage: React.FunctionComponent<{
             <Text>
               {`Start: ${convertEpochSecondsToDateString(
                 event.startDate?.seconds,
-                'dddd D/MMMM h:mm',
+                'dddd D/MMMM HH:mm',
               )}`}
             </Text>
           )}
@@ -38,7 +38,7 @@ const EventPage: React.FunctionComponent<{
             <Text>
               {`Slut: ${convertEpochSecondsToDateString(
                 event.endDate?.seconds,
-                'dddd D/MMMM h:mm',
+                'dddd D/MMMM HH:mm',
               )}`}
             </Text>
           )}

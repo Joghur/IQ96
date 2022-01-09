@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderColor: 'black',
+    borderColor: Colors.button,
     borderWidth: 1,
     borderRadius: 20,
     width: '90%',
