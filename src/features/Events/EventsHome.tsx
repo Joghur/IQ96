@@ -13,7 +13,7 @@ import AddEvent from './AddEvent';
 import Event from './Event';
 // import AddActivity from '../Activities/AddActivity';
 import Banner from '../../components/Banner';
-import {fetchAll, deleteCollection} from '../../utils/db';
+import {fetchAll, deleteDocument} from '../../utils/db';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {handleType} from '../../utils/convertEventType';
 import Colors from '../../constants/colors';
@@ -62,7 +62,7 @@ const EventsHome: React.FunctionComponent = () => {
   };
 
   const handleDelete = () => {
-    deleteCollection('events', event.id);
+    deleteDocument('events', event.id);
     setEvents(oldEvents => {
       return oldEvents.filter(oldEvent => event.id !== oldEvent.id);
     });

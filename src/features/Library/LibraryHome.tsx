@@ -1,12 +1,26 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
 
-import {SONG} from './song';
 import Banner from '../../components/Banner';
 import {ButtonWithIcon} from '../../components/ButtonWithIcon';
+import {fetchDocument} from '../../utils/db';
 import Colors from '../../constants/colors';
 
+const startUri = 'https://iq96.dk/media/pdf/song/';
+
 function LibraryHome({navigation}: any) {
+  const [song, setSong] = useState({});
+
+  useEffect(() => {
+    const fetchSong = async () => {
+      const songData = await fetchDocument('pdf', 'song');
+      if (songData.success) {
+        setSong(songData.success);
+      }
+    };
+    fetchSong();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Banner label={'Bibliotheket'} />
@@ -16,15 +30,17 @@ function LibraryHome({navigation}: any) {
           icon="envelope"
           onPress={() => navigation.navigate('Letters')}
         />
-        <ButtonWithIcon
-          title="IQ Sangen"
-          icon="music"
-          onPress={() =>
-            navigation.navigate('PdfScreen', {
-              media: SONG,
-            })
-          }
-        />
+        {song && (
+          <ButtonWithIcon
+            title="IQ Sangen"
+            icon="music"
+            onPress={() =>
+              navigation.navigate('PdfScreen', {
+                media: {uri: startUri + song.filename},
+              })
+            }
+          />
+        )}
         {/* <Button
         title="Love og Vedtægter"
         onPress={() => navigation.navigate('Laws')}

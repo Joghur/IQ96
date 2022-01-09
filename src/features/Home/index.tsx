@@ -56,6 +56,9 @@ function Home({navigation}) {
       setDateCounter(fromNow(event.startDate.seconds));
       setDiff(dayDiff(event.startDate.seconds));
     }
+    if (event?.endDate?.seconds) {
+      setDiff(dayDiff(event.endDate.seconds));
+    }
   }, [event]);
 
   return (
@@ -64,8 +67,8 @@ function Home({navigation}) {
       <CustomDivider />
       <Text style={styles.upcomingEvent}>{t('upcoming')}</Text>
       {!!dateCounter && <Text>{dateCounter}</Text>}
-      {diff < 7 && <Event event={event} />}
-      {diff >= 7 && (
+      {diff < 9 && diff >= -4 && <Event event={event} />}
+      {diff >= 9 && (
         <View style={styles.event}>
           <Text style={styles.upcomingEvent}>
             {event?.type === 'tour'

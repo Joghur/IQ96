@@ -5,6 +5,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  getDoc,
   query,
   where,
   updateDoc,
@@ -86,7 +87,7 @@ export const fetchAll = async collectionName => {
   return result;
 };
 
-export const deleteCollection = async (collectionName, docId) => {
+export const deleteDocument = async (collectionName, docId) => {
   const db = getFirestore(app);
 
   const result = {success: null, error: null};
@@ -95,7 +96,7 @@ export const deleteCollection = async (collectionName, docId) => {
     await deleteDoc(doc(db, collectionName, docId));
     result.success = docId;
   } catch (e) {
-    console.error('deleteCollection - Error deleting document: ', e);
+    console.error('deleteDocuments - Error deleting document: ', e);
     result.error = e;
   }
   return result;
@@ -115,3 +116,38 @@ export const editDocument = async (collectionName, docId, data) => {
   }
   return result;
 };
+
+export const fetchDocument = async (collectionName, docId) => {
+  const db = getFirestore(app);
+
+  const docRef = doc(db, collectionName, docId);
+  const docSnap = await getDoc(docRef);
+
+  const result = {success: null, error: null};
+
+  if (docSnap.exists()) {
+    console.log('Document data:', docSnap.data());
+    result.success = docSnap.data();
+  } else {
+    console.log('No such document!');
+  }
+
+  //   try {
+  //     const doc = await getDoc(doc(db, collectionName, docId));
+  //     result.success = docId;
+  //   } catch (e) {
+  //     console.error('fetchDocument - Error updating documents: ', e);
+  //     result.error = e;
+  //   }
+  return result;
+};
+
+// const docRef = doc(db, 'cities', 'SF');
+// const docSnap = await getDoc(docRef);
+
+// if (docSnap.exists()) {
+//   console.log('Document data:', docSnap.data());
+// } else {
+//   // doc.data() will be undefined in this case
+//   console.log('No such document!');
+// }
