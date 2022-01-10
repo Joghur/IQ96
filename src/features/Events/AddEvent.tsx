@@ -3,13 +3,13 @@ import {Platform, ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Input, Text} from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ModalSelector from 'react-native-modal-selector';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {EventType} from '../../types/Event';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {countries} from '../../constants/countries';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {editDocument, saveData} from '../../utils/db';
 import {handleType} from '../../utils/convertEventType';
+import {countries} from '../../constants/countries';
 import Colors from '../../constants/colors';
 
 const initialEvent: EventType = {
@@ -85,13 +85,6 @@ const AddEvent: React.Component<{
       ? new Date(editableEvent.startDate.seconds * 1000)
       : new Date(Date.now()),
   );
-  console.log('event', event);
-  console.log('isDatePickerShow', isDatePickerShow);
-  console.log('date', date);
-  console.log('isStartOrEnd', isStartOrEnd);
-  console.log('editableEvent', editableEvent);
-  console.log('editable', editable);
-  console.log('new Date(Date.now())', new Date(Date.now()));
 
   useEffect(() => {
     const countrySelectData = countries.map((country, index) => {
@@ -110,7 +103,6 @@ const AddEvent: React.Component<{
   }, []);
 
   const handleChange = option => {
-    console.log('handleChange, option', option);
     setEvent(oldEvent => ({
       ...oldEvent,
       [option.selectorType]: option.dbValue,
@@ -135,17 +127,12 @@ const AddEvent: React.Component<{
   };
 
   const showPicker = (value: startOrEndDates) => {
-    console.log('showPicker value-------------', value);
     setIsDatePickerShow(() => true);
     setIsStartOrEnd(() => value);
   };
 
   const onChangeDate = event => {
     if (event.type === 'set') {
-      console.log(
-        'onChangeDate - event.nativeEvent.timestamp',
-        event.nativeEvent.timestamp,
-      );
       setDate(event.nativeEvent.timestamp);
       setEvent(oldEvent => ({
         ...oldEvent,

@@ -17,6 +17,7 @@ This is for linux mint. It will open up a window using *nemo*.
 
 ### Versioning
 
-To change these App bundle values, you need to edit
+To change App bundle and versionnumber values, you need to edit
 
-    android/app/build.gradle
+    ./android/app/build.gradle
+    ./package.json

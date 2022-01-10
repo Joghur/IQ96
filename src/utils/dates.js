@@ -7,7 +7,6 @@ export const convertEpochSecondsToDateString = (
   format = 'D/MMMM-YYYY HH:mm',
   timezone = 'Europe/Copenhagen',
 ) => {
-  console.log('timezone ------------', timezone);
   moment.locale('da');
   return moment(epochSeconds * 1000)
     .tz(timezone)

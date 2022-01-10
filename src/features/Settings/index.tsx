@@ -1,14 +1,14 @@
 import React, {memo} from 'react';
 import {useTranslation} from 'react-i18next';
-import {Button, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import Colors from '../../constants/colors';
 
 function Settings() {
-  const {t, i18n} = useTranslation();
+  const {t} = useTranslation();
   return (
     <View style={styles.container}>
       <Text>{t('settings')}</Text>
-      <Button title={t('danish')} onPress={() => i18n.changeLanguage('da')} />
+      <Text>Her kommer logud og version</Text>
     </View>
   );
 }

@@ -42,7 +42,6 @@ const EventsHome: React.FunctionComponent = () => {
     const eventsList = async () => {
       const eventData = await fetchAll('events');
 
-      console.log('eventData ----------', eventData);
       if (eventData?.success) {
         const sortedData: EventType[] = eventData.success.sort((a, b) => {
           return a.startDate - b.startDate;
@@ -89,11 +88,6 @@ const EventsHome: React.FunctionComponent = () => {
       ],
     );
   };
-
-  console.log('1- events', events);
-  console.log('2- event.id', event?.id);
-  console.log('2b- event', event);
-  console.log('3- page', page);
 
   return (
     <SafeAreaView style={styles.container}>

@@ -13,8 +13,6 @@ const EventPage: React.FunctionComponent<{
   onDelete(): void;
   onEdit(): number;
 }> = ({event, onDelete, onEdit}) => {
-  console.log('EventPage - event', event);
-
   if (!event) {
     return <></>;
   }

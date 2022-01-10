@@ -1,6 +1,6 @@
 import React, {memo, useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
 import {StyleSheet, Text, View} from 'react-native';
+import {useTranslation} from 'react-i18next';
 
 import Colors from '../../constants/colors';
 import {CustomDivider} from '../../components/CustomDivider';
@@ -20,13 +20,9 @@ function Home({navigation}) {
   const [dateCounter, setDateCounter] = useState('');
   const [diff, setDiff] = useState(0);
 
-  console.log('Home - event', event);
-  console.log('diff', diff);
-
   const eventsList = async () => {
     const eventData = await fetchAll('events');
 
-    console.log('eventData ----------', eventData);
     if (eventData?.success) {
       const sortedData: EventType[] = eventData.success.sort((a, b) => {
         return a.startDate - b.startDate;
@@ -66,19 +62,28 @@ function Home({navigation}) {
       <Text style={styles.welcome}>{t('welcome')}</Text>
       <CustomDivider />
       <Text style={styles.upcomingEvent}>{t('upcoming')}</Text>
-      {!!dateCounter && <Text>{dateCounter}</Text>}
-      {diff < 9 && diff >= -4 && <Event event={event} />}
-      {diff >= 9 && (
-        <View style={styles.event}>
-          <Text style={styles.upcomingEvent}>
-            {event?.type === 'tour'
-              ? `${handleType(event?.type)} de ${event.city}`
-              : handleType(event?.type)}
-          </Text>
-          <Text>
-            {convertEpochSecondsToDateString(event?.startDate, 'D/MMM')}
-          </Text>
-        </View>
+      {(!!event?.endDate || !!event?.startDate) && (
+        <>
+          {!!dateCounter && <Text>{dateCounter}</Text>}
+          {diff < 9 && diff >= -4 && <Event event={event} />}
+          {diff >= 9 && (
+            <View style={styles.event}>
+              <Text style={styles.upcomingEvent}>
+                {event?.type === 'tour'
+                  ? `${handleType(event?.type)} de ${event.city}`
+                  : handleType(event?.type)}
+              </Text>
+              <Text>
+                {convertEpochSecondsToDateString(event?.startDate, 'D/MMM')}
+              </Text>
+            </View>
+          )}
+        </>
+      )}
+      {!event?.endDate && !event?.startDate && (
+        <>
+          <Text style={styles.noUpcomingEvent}>{t('noDate')}</Text>
+        </>
       )}
     </View>
   );
@@ -100,6 +105,10 @@ const styles = StyleSheet.create({
   },
   upcomingEvent: {
     fontWeight: 'bold',
+  },
+  noUpcomingEvent: {
+    alignContent: 'center',
+    width: '50%',
   },
   event: {
     alignItems: 'center',

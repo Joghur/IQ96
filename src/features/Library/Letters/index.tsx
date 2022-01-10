@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
 
-import LETTERS from './lettersArray';
+// import LETTERS from './lettersArray';
 import Banner from '../../../components/Banner';
 import {ButtonWithIcon} from '../../../components/ButtonWithIcon';
 import {fetchDocument} from '../../../utils/db';
 import Colors from '../../../constants/colors';
-import {convertEpochSecondsToDateString} from '../../../utils/dates';
+// import {convertEpochSecondsToDateString} from '../../../utils/dates';
 
 function sortObj(obj) {
   return Object.keys(obj)
@@ -17,11 +17,11 @@ function sortObj(obj) {
     }, {});
 }
 
-function Letters({navigation}: any) {
-  const [year, setYear] = useState(0);
+function Letters() {
+  //   const [year, setYear] = useState(0);
   const [letters, setLetters] = useState([]);
 
-  console.log('year', year);
+  //   console.log('year', year);
   console.log('letters', letters);
 
   useEffect(() => {
