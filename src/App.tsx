@@ -18,11 +18,6 @@ import './utils/firebase';
 
 const Tab = createBottomTabNavigator();
 
-// type User = {
-//   email: string;
-//   password: string;
-// };
-
 const App = () => {
   const {t} = useTranslation();
   const [user, setUser] = useState({});
@@ -33,14 +28,11 @@ const App = () => {
     const auth = getAuth();
     onAuthStateChanged(auth, userObj => {
       if (userObj) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
         const uid = userObj.uid;
         setUser(() => userObj);
         console.log('uid', uid);
       } else {
-        // User is signed out
-        // ...
+        setUser(null);
       }
     });
   }, []);

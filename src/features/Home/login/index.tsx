@@ -1,13 +1,11 @@
 import React, {useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
 import {Button, Input, Text} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import '../../../utils/firebase';
+import {ButtonWithIcon} from '../../../components/ButtonWithIcon';
+import {logIn, resetPassword} from '../../../utils/auth';
 import Colors from '../../../constants/colors';
-
-const auth = getAuth();
 
 const initUser = {email: '', password: ''};
 
@@ -18,6 +16,8 @@ type User = {
 
 const Login = () => {
   const [user, setUser] = useState<User>(initUser);
+  const [reset, setReset] = useState(false);
+  const [validated, setValidated] = useState(true);
 
   console.log('user', user);
 
@@ -29,49 +29,46 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = async () => {
-    signInWithEmailAndPassword(auth, user.email, user.password)
-      .then(userCredential => {
-        // Signed in
-        const userObj = userCredential.user;
-        console.log('userObj', userObj);
-        // ...
-      })
-      .catch(error => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log('errorCode', errorCode);
-        console.log('errorMessage', errorMessage);
-      });
+  const validate = mail => {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+      setValidated(true);
+      return true;
+    }
+    setValidated(false);
+    return false;
+  };
+
+  const handleSubmit = () => {
+    if (validate(user.email)) {
+      logIn(user);
+    }
+  };
+
+  const handleReset = () => {
+    if (validate(user.email)) {
+      setReset(false);
+      resetPassword(user.email);
+    }
   };
 
   return (
     <View>
       <ScrollView>
         <View style={styles.buttonContainer}></View>
-        <View style={styles.submitButtonContainer}>
-          <Button
-            type="clear"
-            raised
-            title="Login"
-            titleStyle={styles.submitButtonTitle}
-            buttonStyle={styles.submitButton}
-            containerStyle={styles.submitButtonContainer}
-            onPress={() => handleSubmit()}
-          />
-        </View>
         <View style={styles.headerTextContainer}>
           <Text h3 style={styles.headerText}>
-            Tilføj ny begivenhed
+            Login
           </Text>
         </View>
         <View on style={styles.inputContainer}>
           <Input
             value={user.email}
             placeholder="Email"
+            errorStyle={{color: 'red'}}
+            errorMessage={!validated && 'Indtast en rigtig email'}
             leftIcon={
               <>
-                <Icon name="place" size={24} color={Colors.dark} />
+                <Icon name="email" size={24} color={Colors.dark} />
               </>
             }
             onChangeText={value =>
@@ -79,20 +76,46 @@ const Login = () => {
             }
           />
         </View>
-        <View on style={styles.inputContainer}>
-          <Input
-            passwordRules
-            value={user.password}
-            placeholder="Kodeord"
-            leftIcon={
-              <>
-                <Icon name="nightlife" size={24} color={Colors.dark} />
-              </>
-            }
-            onChangeText={value =>
-              handleChange({dbValue: value, selectorType: 'password'})
-            }
+        {!reset && (
+          <View on style={styles.inputContainer}>
+            <Input
+              secureTextEntry={true}
+              value={user.password}
+              placeholder="Kodeord"
+              leftIcon={
+                <>
+                  <Icon name="lock" size={24} color={Colors.dark} />
+                </>
+              }
+              onChangeText={value =>
+                handleChange({dbValue: value, selectorType: 'password'})
+              }
+            />
+          </View>
+        )}
+        {reset && (
+          <View style={styles.resetText}>
+            <Text>1. Indtast din email ovenover og tryk Reset</Text>
+            <Text>2. Gå til din email indboks </Text>
+            <Text>
+              3. Find reset mailen. Den kommer fra iq96-20418.firebaseapp.com{' '}
+            </Text>
+            <Text>
+              4. Tryk på link - vælg nyt kodeord - kom tilbage hertil{' '}
+            </Text>
+          </View>
+        )}
+        <View style={styles.buttons}>
+          <ButtonWithIcon
+            title={reset ? 'Reset' : 'Login'}
+            icon={reset ? 'refresh' : 'unlock'}
+            onPress={reset ? handleReset : handleSubmit}
           />
+          <View style={styles.resetButton}>
+            <Text onPress={() => setReset(reset => !reset)}>
+              {reset ? 'Login' : 'Glemt kodeord'}
+            </Text>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -108,23 +131,16 @@ const styles = StyleSheet.create({
   headerText: {
     color: Colors.dark,
   },
-  submitButton: {
-    width: 170,
-    height: 50,
-    elevation: 1,
-    backgroundColor: 'transparent',
-  },
-  submitButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-    marginRight: 10,
-  },
-  submitButtonTitle: {
-    color: Colors.button,
-  },
   inputContainer: {
     marginTop: 10,
+  },
+  buttons: {
+    alignItems: 'center',
+  },
+  resetButton: {
+    paddingVertical: 15,
+  },
+  resetText: {
+    alignItems: 'center',
   },
 });
