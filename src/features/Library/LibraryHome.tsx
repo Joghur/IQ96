@@ -6,7 +6,9 @@ import {ButtonWithIcon} from '../../components/ButtonWithIcon';
 import {fetchDocument} from '../../utils/db';
 import Colors from '../../constants/colors';
 
-const startUri = 'https://iq96.dk/media/pdf/song/';
+const iq96Url = 'https://iq96.dk';
+const media = '/media';
+const songFolder = '/pdf/song/';
 
 function LibraryHome({navigation}: any) {
   const [song, setSong] = useState({});
@@ -36,7 +38,9 @@ function LibraryHome({navigation}: any) {
             icon="music"
             onPress={() =>
               navigation.navigate('PdfScreen', {
-                media: {uri: startUri + song.filename},
+                media: {
+                  uri: iq96Url + media + songFolder + song.filename,
+                },
               })
             }
           />

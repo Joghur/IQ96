@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import {Button, Input, Text} from 'react-native-elements';
+import {Input, Text} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {ButtonWithIcon} from '../../../components/ButtonWithIcon';
@@ -19,10 +19,7 @@ const Login = () => {
   const [reset, setReset] = useState(false);
   const [validated, setValidated] = useState(true);
 
-  console.log('user', user);
-
   const handleChange = option => {
-    console.log('handleChange, option', option);
     setUser(oldUser => ({
       ...oldUser,
       [option.selectorType]: option.dbValue,

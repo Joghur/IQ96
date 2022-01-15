@@ -5,7 +5,7 @@ import {Button, Input, Text} from 'react-native-elements';
 import {EventActivityType} from '../../types/Event';
 import {ActivityType} from '../../types/Activity';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {fetchData, editDocument, saveData} from '../../utils/db';
+import {queryDocuments, editDocument, saveData} from '../../utils/db';
 import Colors from '../../constants/colors';
 
 const initialActivity: ActivityType = {
@@ -32,7 +32,7 @@ const AddActivity = ({
 
   useEffect(() => {
     const fetch = async () => {
-      const activityData = await fetchData(
+      const activityData = await queryDocuments(
         'activities',
         'id',
         '==',

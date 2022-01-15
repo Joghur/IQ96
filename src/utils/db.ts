@@ -34,7 +34,7 @@ export const saveData = async (dataCollection, data) => {
  * @param where3rd
  * @returns
  */
-export const fetchData = async (
+export const queryDocuments = async (
   collectionName,
   where1st,
   where2nd,
@@ -56,7 +56,18 @@ export const fetchData = async (
       return obj;
     });
   } catch (e) {
-    console.error('fetchData - Error fetching documents: ', e);
+    console.error(
+      'queryDocuments - Error fetching documents: ',
+      'collectionName',
+      collectionName,
+      'where1st',
+      where1st,
+      'where2nd',
+      where2nd,
+      'where3rd',
+      where3rd,
+      e,
+    );
     result.error = e;
   }
   return result;
@@ -67,7 +78,7 @@ export const fetchData = async (
  * @param collectionName
  * @returns
  */
-export const fetchAll = async collectionName => {
+export const fetchDocuments = async collectionName => {
   const db = getFirestore(app);
 
   const result = {success: null, error: null};
@@ -81,7 +92,7 @@ export const fetchAll = async collectionName => {
       return obj;
     });
   } catch (e) {
-    console.error('fetchAll - Error fetching documents: ', e);
+    console.error('fetchDocuments - Error fetching documents: ', e);
     result.error = e;
   }
   return result;

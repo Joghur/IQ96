@@ -1,5 +1,7 @@
 import {Alert} from 'react-native';
 
+import {deleteData} from './async';
+
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -27,6 +29,7 @@ export const logOut = async () => {
   console.log('logOut');
   try {
     await signOut(auth);
+    await deleteData();
   } catch (error) {
     console.log('Logout error: ', error);
     Alert.alert('Der er skete en fejl under log ud');
@@ -34,24 +37,10 @@ export const logOut = async () => {
 };
 
 export const resetPassword = async email => {
-  //   const actionCodeSettings = {
-  //     url: 'https://www.example.com/?email=user@example.com',
-  //     iOS: {
-  //       bundleId: 'com.example.ios',
-  //     },
-  //     android: {
-  //       packageName: 'com.example.android',
-  //       installApp: true,
-  //       minimumVersion: '12',
-  //     },
-  //     handleCodeInApp: true,
-  //   };
   try {
     await sendPasswordResetEmail(auth, email);
   } catch (error) {
     console.log('Logout error: ', error);
     Alert.alert('Der er skete en fejl under log ud', error);
   }
-  // Obtain code from user.
-  //   await confirmPasswordReset('user@example.com', code);
 };

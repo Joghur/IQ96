@@ -2,9 +2,9 @@ import React, {memo, useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
 
-import Colors from '../../constants/colors';
 import {CustomDivider} from '../../components/CustomDivider';
-import {fetchAll} from '../../utils/db';
+import Colors from '../../constants/colors';
+import {fetchDocuments} from '../../utils/db';
 import {
   convertEpochSecondsToDateString,
   fromNow,
@@ -21,7 +21,7 @@ function Home({navigation}) {
   const [diff, setDiff] = useState(0);
 
   const eventsList = async () => {
-    const eventData = await fetchAll('events');
+    const eventData = await fetchDocuments('events');
 
     if (eventData?.success) {
       const sortedData: EventType[] = eventData.success.sort((a, b) => {
@@ -59,6 +59,7 @@ function Home({navigation}) {
 
   return (
     <View style={styles.container}>
+      {/* <Banner label={'Bibliotheket'} /> */}
       <Text style={styles.welcome}>{t('welcome')}</Text>
       <CustomDivider />
       <Text style={styles.upcomingEvent}>{t('upcoming')}</Text>

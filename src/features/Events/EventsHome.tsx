@@ -13,7 +13,7 @@ import AddEvent from './AddEvent';
 import Event from './Event';
 // import AddActivity from '../Activities/AddActivity';
 import Banner from '../../components/Banner';
-import {fetchAll, deleteDocument} from '../../utils/db';
+import {fetchDocuments, deleteDocument} from '../../utils/db';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {handleType} from '../../utils/convertEventType';
 import Colors from '../../constants/colors';
@@ -40,7 +40,7 @@ const EventsHome: React.FunctionComponent = () => {
 
   useEffect(() => {
     const eventsList = async () => {
-      const eventData = await fetchAll('events');
+      const eventData = await fetchDocuments('events');
 
       if (eventData?.success) {
         const sortedData: EventType[] = eventData.success.sort((a, b) => {
@@ -212,5 +212,6 @@ const styles = StyleSheet.create({
   overlay: {
     borderRadius: 50,
     elevation: 7,
+    backgroundColor: Colors.light,
   },
 });
