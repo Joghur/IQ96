@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import AsyncStorage from '@react-native-community/async-storage';
 
 export const getData = async key => {
@@ -28,7 +29,7 @@ export const storeData = async (key, value) => {
  */
 export const deleteData = async keys => {
   // Put other keys not to be erased here
-  const {...rest} = keys;
+  const {email, ...rest} = keys;
 
   try {
     await AsyncStorage.multiRemove(Object.keys(rest));
@@ -50,4 +51,5 @@ export const queryKeys = async () => {
 export const keys = {
   settings: 'settings',
   user: 'user',
+  email: 'email',
 };

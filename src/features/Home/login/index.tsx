@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {Input, Text} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -6,18 +6,37 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {ButtonWithIcon} from '../../../components/ButtonWithIcon';
 import {logIn, resetPassword} from '../../../utils/auth';
 import Colors from '../../../constants/colors';
+import {storeData, getData} from '../../../utils/async';
 
-const initUser = {email: '', password: ''};
-
-type User = {
+type LoginCreds = {
   email: string;
   password: string;
 };
 
 const Login = () => {
-  const [user, setUser] = useState<User>(initUser);
+  console.log('Login ');
+  const [user, setUser] = useState<LoginCreds>(null);
   const [reset, setReset] = useState(false);
-  const [validated, setValidated] = useState(true);
+  const [validatedEmail, setValidatedEmail] = useState(true);
+  const [validatedPassword, setValidatedPassword] = useState(true);
+
+  useEffect(() => {
+    handleStart();
+  }, []);
+
+  const handleStart = async () => {
+    const initUser = {email: '', password: ''};
+    const startEmail = await getData('email');
+
+    console.log('startEmail', startEmail);
+
+    if (startEmail) {
+      initUser.email = startEmail;
+    }
+
+    console.log('initUser', initUser);
+    setUser(initUser);
+  };
 
   const handleChange = option => {
     setUser(oldUser => ({
@@ -26,17 +45,27 @@ const Login = () => {
     }));
   };
 
-  const validate = mail => {
+  const validateEmail = mail => {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
-      setValidated(true);
+      setValidatedEmail(true);
       return true;
     }
-    setValidated(false);
+    setValidatedEmail(false);
+    return false;
+  };
+
+  const validatePassword = password => {
+    if (password.length > 5) {
+      setValidatedPassword(true);
+      return true;
+    }
+    setValidatedPassword(false);
     return false;
   };
 
   const handleSubmit = () => {
-    if (validate(user.email)) {
+    if (validateEmail(user.email) && validatePassword(user.password)) {
+      storeData('email', user.email);
       logIn(user);
     }
   };
@@ -57,28 +86,34 @@ const Login = () => {
             Login
           </Text>
         </View>
-        <View on style={styles.inputContainer}>
-          <Input
-            value={user.email}
-            placeholder="Email"
-            errorStyle={{color: 'red'}}
-            errorMessage={!validated && 'Indtast en rigtig email'}
-            leftIcon={
-              <>
-                <Icon name="email" size={24} color={Colors.dark} />
-              </>
-            }
-            onChangeText={value =>
-              handleChange({dbValue: value, selectorType: 'email'})
-            }
-          />
-        </View>
-        {!reset && (
+        {user && (
+          <View on style={styles.inputContainer}>
+            <Input
+              value={user.email}
+              placeholder={user.email || 'Email'}
+              errorStyle={{color: 'red'}}
+              errorMessage={!validatedEmail && 'Indtast en rigtig email'}
+              leftIcon={
+                <>
+                  <Icon name="email" size={24} color={Colors.dark} />
+                </>
+              }
+              onChangeText={value =>
+                handleChange({dbValue: value, selectorType: 'email'})
+              }
+            />
+          </View>
+        )}
+        {user && !reset && (
           <View on style={styles.inputContainer}>
             <Input
               secureTextEntry={true}
               value={user.password}
               placeholder="Kodeord"
+              errorStyle={{color: 'red'}}
+              errorMessage={
+                !validatedPassword && 'Kodeord skal være mindst 6 tegn'
+              }
               leftIcon={
                 <>
                   <Icon name="lock" size={24} color={Colors.dark} />
