@@ -8,7 +8,7 @@ import {getAuth, onAuthStateChanged} from 'firebase/auth';
 
 import Home from './features/Home';
 import Events from './features/Events';
-// import Chat from './features/Chat';
+import Chat from './features/Chat';
 import Library from './features/Library';
 // import Members from './features/Members';
 import Settings from './features/Settings';
@@ -135,7 +135,7 @@ const Start = () => {
             ),
           }}
         />
-        {/* <Tab.Screen
+        <Tab.Screen
           name={t('chat')}
           component={Chat}
           options={{
@@ -148,7 +148,7 @@ const Start = () => {
               />
             ),
           }}
-        /> */}
+        />
         <Tab.Screen
           name={t('settings')}
           component={Settings}

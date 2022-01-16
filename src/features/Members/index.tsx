@@ -4,7 +4,7 @@ import {StyleSheet, View, Text} from 'react-native';
 import Colors from '../../constants/colors';
 import Banner from '../../components/Banner';
 
-function Chat() {
+function Members() {
   return (
     <View style={styles.container}>
       <Banner label={'Med-lemmer'} />
@@ -13,7 +13,7 @@ function Chat() {
   );
 }
 
-export default memo(Chat);
+export default memo(Members);
 
 const styles = StyleSheet.create({
   container: {

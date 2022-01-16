@@ -153,6 +153,11 @@ export const fetchDocument = async (collectionName, docId) => {
   return result;
 };
 
+export const chatDB = async () => {
+  const db = getFirestore(app);
+  return collection(db, 'chats');
+};
+
 // const docRef = doc(db, 'cities', 'SF');
 // const docSnap = await getDoc(docRef);
 

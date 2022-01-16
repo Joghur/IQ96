@@ -11,10 +11,25 @@ export const userState = atom({
 });
 
 export const userSelector = selector({
-  key: 'userSelector', // unique ID (with respect to other atoms/selectors)
+  key: 'userSelector',
   get: ({get}) => {
     const user = get(userState);
 
     return user;
+  },
+});
+
+export const eventState = atom({
+  key: 'eventState',
+
+  default: {},
+});
+
+export const eventSelector = selector({
+  key: 'eventSelector',
+  get: ({get}) => {
+    const event = get(eventState);
+
+    return event;
   },
 });
