@@ -26,7 +26,7 @@
     "@react-navigation/native": "6.0.2",
     "@react-navigation/native-stack": "6.2.5",
     "fbjs": "3.0.2",
-    "firebase": "9.6.1",
+    "firebase": "9.6.4",
     "i18next": "20.4.0",
     "moment": "2.29.1",
     "moment-timezone": "0.5.34",

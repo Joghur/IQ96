@@ -40,7 +40,7 @@ export const logOut = async () => {
 
 export const resetPassword = async email => {
   try {
-    await sendPasswordResetEmail(auth, email);
+    await sendPasswordResetEmail(auth, email, null);
   } catch (error) {
     console.log('Logout error: ', error);
     Alert.alert('Der er skete en fejl under log ud', error);

@@ -71,7 +71,7 @@ const Login = () => {
   };
 
   const handleReset = () => {
-    if (validate(user.email)) {
+    if (validateEmail(user.email)) {
       setReset(false);
       resetPassword(user.email);
     }
