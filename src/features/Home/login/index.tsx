@@ -14,7 +14,6 @@ type LoginCreds = {
 };
 
 const Login = () => {
-  console.log('Login ');
   const [user, setUser] = useState<LoginCreds>(null);
   const [reset, setReset] = useState(false);
   const [validatedEmail, setValidatedEmail] = useState(true);

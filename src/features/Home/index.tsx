@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useState} from 'react';
+import React, {memo, useEffect, useLayoutEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
 
@@ -33,7 +33,7 @@ function Home({navigation}) {
       Alert.alert('Kunne ikke hente begivenheds data');
     }
   };
-  useEffect(() => {
+  useLayoutEffect(() => {
     eventsList();
   }, []);
 
@@ -47,7 +47,7 @@ function Home({navigation}) {
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (event?.startDate?.seconds) {
       setDateCounter(fromNow(event.startDate.seconds));
       setDiff(dayDiff(event.startDate.seconds));

@@ -42,7 +42,7 @@ const EventPage: React.FunctionComponent<{
           )}
         </>
       )}
-      {!!event.meetingPoints && (
+      {!!event.meetingPoints?.trim() && (
         <>
           <CustomDivider />
           <Text style={styles.headLine}>Mødesteder</Text>
@@ -51,7 +51,7 @@ const EventPage: React.FunctionComponent<{
           </View>
         </>
       )}
-      {!!event.activities && (
+      {!!event.activities?.trim() && (
         <>
           <CustomDivider />
           <Text style={styles.headLine}>Aktiviteter</Text>

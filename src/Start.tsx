@@ -34,7 +34,7 @@ const Start = () => {
   useEffect(() => {
     const auth = getAuth();
     const subscriber = onAuthStateChanged(auth, userObj => {
-      console.log('userObj', userObj);
+    //   console.log('userObj', userObj);
       if (userObj) {
         setAuthUser(() => userObj);
         checkStorage(userObj.uid);

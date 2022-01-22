@@ -6,5 +6,6 @@ export type User = {
   name: string;
   nick: string;
   title: string;
+  avatar?: string;
   firebaseId: string;
 };
