@@ -39,7 +39,7 @@ const quickReplies = {
 function Chat() {
   const user: User = useRecoilValue(userState);
   const [messages, setMessages] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState('general');
+  const [group, setGroup] = useState('general');
 
   console.log('Chat - user', user);
   console.log('Chat - messages', messages);
@@ -47,7 +47,7 @@ function Chat() {
 
   useLayoutEffect(() => {
     fetchMessages();
-  }, [selectedGroup]);
+  }, [group]);
 
   const onSend = useCallback((messages = []) => {
     console.log('onSend messages', messages);
@@ -61,13 +61,13 @@ function Chat() {
       createdAt,
       text,
       user,
-      selectedGroup,
+      group,
     });
   }, []);
 
   const fetchMessages = async () => {
     let result = [];
-    result = await queryDocuments('chats', 'group', '==', selectedGroup);
+    result = await queryDocuments('chats', 'group', '==', group);
     console.log('result.success', result.success);
     console.log('!!result.success', !!result.success);
     setMessages(() =>
@@ -94,7 +94,7 @@ function Chat() {
         }}
         quickReplies={quickReplies}
         locale="da"
-        timeFormat="H:m"
+        timeFormat="HH:mm"
         dateFormat="dddd D MMM YYYY"
       />
     </View>
