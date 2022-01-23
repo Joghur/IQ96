@@ -9,7 +9,9 @@ import {
   query,
   where,
   updateDoc,
+  deleteField,
 } from 'firebase/firestore/lite';
+
 import {app} from '../utils/firebase';
 
 export const saveData = async (dataCollection, data) => {
@@ -113,6 +115,32 @@ export const deleteDocument = async (collectionName, docId) => {
   return result;
 };
 
+export const deleteDocumentField = async (collectionName, docId, field) => {
+  const db = getFirestore(app);
+
+  const result = {success: null, error: null};
+
+  try {
+    const ref = doc(db, collectionName, docId);
+
+    await updateDoc(ref, {location: deleteField()});
+    result.success = docId;
+  } catch (e) {
+    console.error(
+      'deleteDocumentField - Error deleting document field: ',
+      e,
+      'collectionName',
+      collectionName,
+      'docId: ',
+      docId,
+      'field',
+      field,
+    );
+    result.error = e;
+  }
+  return result;
+};
+
 export const editDocument = async (collectionName, docId, data) => {
   const db = getFirestore(app);
 
@@ -122,7 +150,14 @@ export const editDocument = async (collectionName, docId, data) => {
     await updateDoc(doc(db, collectionName, docId), data);
     result.success = docId;
   } catch (e) {
-    console.error('editDocument - Error updating documents: ', e);
+    console.error(
+      'editDocument - Error updating documents: ',
+      e,
+      'docId: ',
+      docId,
+      'Data: ',
+      data,
+    );
     result.error = e;
   }
   return result;

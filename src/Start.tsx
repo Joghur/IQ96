@@ -3,6 +3,7 @@ import {useRecoilState} from 'recoil';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import {useTranslation} from 'react-i18next';
 import {getAuth, onAuthStateChanged} from 'firebase/auth';
 
@@ -10,6 +11,7 @@ import Home from './features/Home';
 import Events from './features/Events';
 import Chat from './features/Chat';
 import Library from './features/Library';
+import Map from './features/Map';
 // import Members from './features/Members';
 import Settings from './features/Settings';
 import Login from './features/Home/login';
@@ -18,6 +20,7 @@ import {userState} from './utils/appState';
 
 import './i18n';
 import './utils/firebase';
+import {getData, storeData} from './utils/async';
 
 const Tab = createBottomTabNavigator();
 const Start = () => {
@@ -25,16 +28,15 @@ const Start = () => {
 
   const [authUser, setAuthUser] = useState(null);
   const [initializing, setInitializing] = useState(true);
-  const [settings, setSettings] = useState(null);
+  //   const [settings, setSettings] = useRecoilState(null);
   const [user, setUser] = useRecoilState(userState);
 
-  console.log('settings', settings);
   console.log('user', user);
 
   useEffect(() => {
     const auth = getAuth();
     const subscriber = onAuthStateChanged(auth, userObj => {
-    //   console.log('userObj', userObj);
+      //   console.log('userObj', userObj);
       if (userObj) {
         setAuthUser(() => userObj);
         checkStorage(userObj.uid);
@@ -48,14 +50,19 @@ const Start = () => {
 
   const checkStorage = async uid => {
     if (uid === undefined) return;
-
-    console.log('firebase settingsData');
-    const settingsData = await fetchDocuments('settings');
-    if (settingsData?.success?.length === 1) {
-      setSettings(() => settingsData.success[0]);
+    const settings = await getData('settings');
+    if (!settings) {
+      console.log('firebase settingsData');
+      const settingsData = await fetchDocuments('settings');
+      if (settingsData?.success?.length === 1) {
+        storeData('settings', settingsData.success[0]);
+        // setSettings(() => settingsData.success[0]);
+      } else {
+        console.log('Error happened in App - settings: ', settingsData?.error);
+        Alert.alert('Fejl under hentning af indstillinger - 1');
+      }
     } else {
-      console.log('Error happened in App - settings: ', settingsData?.error);
-      Alert.alert('Fejl under hentning af indstillinger');
+      console.log('async settingsData', settings);
     }
 
     console.log('firebase userData');
@@ -122,6 +129,16 @@ const Start = () => {
           }}
         /> */}
         <Tab.Screen
+          name={'Kort'}
+          component={Map}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({color, size}) => (
+              <Feather name={'map'} size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
           name={t('library')}
           component={Library}
           options={{
@@ -153,6 +170,7 @@ const Start = () => {
           name={t('settings')}
           component={Settings}
           options={{
+            headerShown: false,
             tabBarLabel: t('settings'),
             tabBarIcon: ({focused, color, size}) => (
               <MaterialCommunityIcons

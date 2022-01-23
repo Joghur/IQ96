@@ -33,3 +33,18 @@ export const eventSelector = selector({
     return event;
   },
 });
+
+export const lokationState = atom({
+  key: 'lokationState',
+
+  default: false,
+});
+
+export const lokationSelector = selector({
+  key: 'lokationSelector',
+  get: ({get}) => {
+    const lokation = get(lokationSelector);
+
+    return lokation;
+  },
+});

@@ -1,8 +1,8 @@
 import React, {memo, useEffect, useLayoutEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
+import {Divider} from 'react-native-elements';
 
-import {CustomDivider} from '../../components/CustomDivider';
 import Colors from '../../constants/colors';
 import {fetchDocuments} from '../../utils/db';
 import {
@@ -13,6 +13,7 @@ import {
 import {handleType} from '../../utils/convertEventType';
 import {EventType} from '../../types/Event';
 import Event from '../Events/Event';
+import Banner from '../../components/Banner';
 
 function Home({navigation}) {
   const {t} = useTranslation();
@@ -58,35 +59,39 @@ function Home({navigation}) {
   }, [event]);
 
   return (
-    <View style={styles.container}>
-      {/* <Banner label={'Bibliotheket'} /> */}
-      <Text style={styles.welcome}>{t('welcome')}</Text>
-      <CustomDivider />
-      <Text style={styles.upcomingEvent}>{t('upcoming')}</Text>
-      {(!!event?.endDate || !!event?.startDate) && (
-        <>
-          {!!dateCounter && <Text>{dateCounter}</Text>}
-          {diff < 9 && diff >= -4 && <Event event={event} />}
-          {diff >= 9 && (
-            <View style={styles.event}>
-              <Text style={styles.upcomingEvent}>
-                {event?.type === 'tour'
-                  ? `${handleType(event?.type)} de ${event.city}`
-                  : handleType(event?.type)}
-              </Text>
-              <Text>
-                {convertEpochSecondsToDateString(event?.startDate, 'D/MMM')}
-              </Text>
-            </View>
+    <>
+      <Banner label={'Overblik'} />
+      <View style={styles.container}>
+        <Text style={styles.welcome}>{t('welcome')}</Text>
+        <Divider orientation="horizontal" width={1} />
+        <View style={styles.event}>
+          <Text style={styles.upcomingEvent}>{t('upcoming')}</Text>
+          {(!!event?.endDate || !!event?.startDate) && (
+            <>
+              {!!dateCounter && <Text>{dateCounter}</Text>}
+              {diff < 9 && diff >= -4 && <Event event={event} />}
+              {diff >= 9 && (
+                <>
+                  <Text style={styles.upcomingEvent}>
+                    {event?.type === 'tour'
+                      ? `${handleType(event?.type)} de ${event.city}`
+                      : handleType(event?.type)}
+                  </Text>
+                  <Text>
+                    {convertEpochSecondsToDateString(event?.startDate, 'D/MMM')}
+                  </Text>
+                </>
+              )}
+            </>
           )}
-        </>
-      )}
-      {!event?.endDate && !event?.startDate && (
-        <>
-          <Text style={styles.noUpcomingEvent}>{t('noDate')}</Text>
-        </>
-      )}
-    </View>
+          {!event?.endDate && !event?.startDate && (
+            <>
+              <Text style={styles.noUpcomingEvent}>{t('noDate')}</Text>
+            </>
+          )}
+        </View>
+      </View>
+    </>
   );
 }
 
@@ -94,9 +99,6 @@ export default memo(Home);
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: Colors.light,
   },
   welcome: {

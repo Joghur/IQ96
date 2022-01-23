@@ -11,7 +11,6 @@ import {FAB, Overlay} from 'react-native-elements';
 
 import AddEvent from './AddEvent';
 import Event from './Event';
-// import AddActivity from '../Activities/AddActivity';
 import Banner from '../../components/Banner';
 import {fetchDocuments, deleteDocument} from '../../utils/db';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
@@ -91,7 +90,7 @@ const EventsHome: React.FunctionComponent = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Banner label={'Næste begivenheder'} />
+      <Banner label={'Begivenheder'} />
       {page !== 'add' && page !== 'edit' && (
         <FAB
           icon={{name: 'add', size: 24, color: Colors.button}}

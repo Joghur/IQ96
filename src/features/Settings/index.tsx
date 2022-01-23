@@ -9,6 +9,7 @@ import packageJson from '../../../package.json';
 import {userState} from '../../utils/appState';
 import {CustomDivider} from '../../components/CustomDivider';
 import User from '../../types/User';
+import Banner from '../../components/Banner';
 
 function Settings() {
   const user: User = useRecoilValue(userState);
@@ -16,33 +17,36 @@ function Settings() {
   console.log('user', user);
 
   return (
-    <View style={styles.container}>
-      {user && (
-        <>
-          {user.isBoard && (
-            <Text style={{...styles.bold, ...styles.italic, ...styles.board}}>
-              Er i bestyrelsen
-            </Text>
-          )}
-          {user.isAdmin && (
-            <Text style={{...styles.bold, ...styles.italic, ...styles.it}}>
-              IT afdelingen
-            </Text>
-          )}
-          <Text style={styles.bold}>{user.name}</Text>
-          <Text style={styles.italic}>{user.nick}</Text>
-          <Text style={styles.italic}>{user.title}</Text>
-        </>
-      )}
-      <CustomDivider />
-      <Text>IQ96 app</Text>
-      <Text>version {packageJson.version}</Text>
-      <ButtonWithIcon
-        title="Log ud"
-        icon="power-off"
-        onPress={() => logOut()}
-      />
-    </View>
+    <>
+      <Banner label={'Indstillinger'} />
+      <View style={styles.container}>
+        {user && (
+          <>
+            {user.isBoard && (
+              <Text style={{...styles.bold, ...styles.italic, ...styles.board}}>
+                Er i bestyrelsen
+              </Text>
+            )}
+            {user.isAdmin && (
+              <Text style={{...styles.bold, ...styles.italic, ...styles.it}}>
+                IT afdelingen
+              </Text>
+            )}
+            <Text style={styles.bold}>{user.name}</Text>
+            <Text style={styles.italic}>{user.nick}</Text>
+            <Text style={styles.italic}>{user.title}</Text>
+          </>
+        )}
+        <CustomDivider />
+        <Text>IQ96 app</Text>
+        <Text>version {packageJson.version}</Text>
+        <ButtonWithIcon
+          title="Log ud"
+          icon="power-off"
+          onPress={() => logOut()}
+        />
+      </View>
+    </>
   );
 }
 
@@ -64,11 +68,12 @@ const styles = StyleSheet.create({
   board: {
     marginLeft: 70,
     color: Colors.success,
-    transform: [{rotateY: '30deg'}, {rotateZ: '30deg'}],
+    transform: [{rotateY: '20deg'}, {rotateZ: '20deg'}],
   },
   it: {
     marginRight: 80,
+    marginBottom: 5,
     color: Colors.event,
-    transform: [{rotateY: '-30deg'}, {rotateZ: '-30deg'}],
+    transform: [{rotateY: '-20deg'}, {rotateZ: '-20deg'}],
   },
 });
