@@ -9,76 +9,151 @@ import Colors from '../constants/colors';
 import {lokationState, userState} from '../utils/appState';
 import {getData, storeData} from '../utils/async';
 import Location from '../types/Location';
-import User from '../types/User';
-import {editDocument, deleteDocumentField} from '../utils/db';
+import {
+  fetchDocument,
+  saveData,
+  deleteDocument,
+  editDocument,
+} from '../utils/db';
+import MapIcons from '../types/MapIcons';
 
 const LocationButton = () => {
   const [isLocationOn, setIsLocationOn] = useRecoilState(lokationState);
   const [user, setUser] = useRecoilState(userState);
   const [location, setLocation] = useState<Location>(null);
+  const [error, setError] = useState();
 
   console.log('location -------------- ', location);
+  console.log('user -------------- ', user);
+
+  const geo_success = info => {
+    setLocation((old: Location) => ({
+      ...old,
+      latitude: info.coords.latitude,
+      longitude: info.coords.longitude,
+    }));
+  };
+  const geo_error = error => {
+    setError(error);
+  };
+  const geo_options = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+  };
 
   useLayoutEffect(() => {
     handleStartLocation();
   }, []);
 
   const handleStartLocation = async () => {
-    const lok = await getData('isLocationOn');
-    console.log('lok', lok);
-    if (lok === null) {
+    const locationAllowed = await getData('isLocationOn');
+    const asyncLocationId = await getData('locationId');
+    console.log('locationAllowed', locationAllowed);
+    console.log('asyncLocationId', asyncLocationId);
+    if (locationAllowed === null) {
       await storeData('isLocationOn', false);
       setIsLocationOn(false);
     } else {
-      if (lok) {
-        Geolocation.getCurrentPosition(info =>
-          setLocation((old: Location) => ({
-            ...old,
-            latitude: info.coords.latitude,
-            longitude: info.coords.longitude,
-          })),
-        );
-        if (location) {
-          setIsLocationOn(true);
-          setUser((old: User) => ({
-            ...old,
-            location,
-          }));
-          await editDocument('users', user.id, {
-            location: new GeoPoint(
-              Number(location.latitude),
-              Number(location.longitude),
-            ),
-          });
-        }
+      if (locationAllowed) {
+        setUser(oldUser => ({
+          ...oldUser,
+          locationId: asyncLocationId,
+        }));
+        console.log('55');
+        saveLocationToDB();
         return;
       }
-      if (user.id) {
-        const result = await deleteDocumentField('users', user.id, 'location');
+      //   if it's not allowed to transmit location
+      if (user?.locationId) {
+        console.log('77');
+        const result = await deleteDocument('map', user.locationId);
+        setUser(oldUser => ({
+          ...oldUser,
+          locationId: null,
+        }));
         console.log('delete field', result);
         setIsLocationOn(false);
-        setUser((old: User) => ({
-          ...old,
-          location: null,
-        }));
       }
     }
   };
 
   const handleChange = async () => {
+    console.log('85');
     if (isLocationOn) {
+      console.log('87');
       await storeData('isLocationOn', false);
       setIsLocationOn(false);
       setLocation(null);
-      setUser((old: User) => ({
-        ...old,
-        location: null,
-      }));
-      await deleteDocumentField('users', user.id, 'location');
+      if (user.locationId) {
+        console.log('92');
+        await deleteDocument('map', user.locationId);
+        setUser(oldUser => ({
+          ...oldUser,
+          locationId: null,
+        }));
+      }
       return;
     }
     // if isLokationOn is false and we turn it on permissions have to be checked
     permissionStatus();
+  };
+
+  const saveLocationToDB = async () => {
+    console.log('110');
+    Geolocation.getCurrentPosition(geo_success, geo_error, geo_options);
+    console.log('location', location);
+    if (location) {
+      console.log('112');
+      console.log('131');
+      await storeData('isLocationOn', true);
+      setIsLocationOn(true);
+      console.log(
+        '1 - Number(location.latitude) Number(location.latitude)',
+        Number(location.latitude),
+        Number(location.longitude),
+      );
+      try {
+        console.log('140');
+        let doc;
+        if (user?.locationId) {
+          doc = await fetchDocument('map', user.locationId);
+        }
+        console.log('141');
+        console.log('doc - ----- ', doc);
+        if (doc) {
+          await editDocument('map', user.locationId, {
+            nick: user.nick,
+            location: new GeoPoint(
+              Number(location.latitude),
+              Number(location.longitude),
+            ),
+            timestamp: new Date(),
+            type: 'location-pin',
+          });
+        } else {
+          console.log('150');
+          const locationId = await saveData('map', {
+            nick: user.nick,
+            location: new GeoPoint(
+              Number(location.latitude),
+              Number(location.longitude),
+            ),
+            timestamp: new Date(),
+            type: 'location-pin',
+          });
+          if (locationId.success) {
+            console.log('160');
+            await storeData('locationId', locationId.success);
+            setUser(oldUser => ({
+              ...oldUser,
+              locationId: locationId.success,
+            }));
+          }
+        }
+      } catch (error) {
+        console.log('permissionStatus - error', error);
+      }
+    }
   };
 
   const permissionStatus = async () => {
@@ -101,28 +176,8 @@ const LocationButton = () => {
       const permissionGranted = permissionStatus === RESULTS.GRANTED;
       console.log('permissionGranted', permissionGranted);
       if (permissionGranted) {
-        Geolocation.getCurrentPosition(info =>
-          setLocation((old: Location) => ({
-            ...old,
-            latitude: info.coords.latitude,
-            longitude: info.coords.longitude,
-          })),
-        );
-        if (location) {
-          await storeData('isLocationOn', true);
-          setIsLocationOn(true);
-          console.log(
-            '1 - Number(location.latitude) Number(location.latitude)',
-            Number(location.latitude),
-            Number(location.latitude),
-          );
-          await editDocument('users', user.id, {
-            location: new GeoPoint(
-              Number(location.latitude),
-              Number(location.latitude),
-            ),
-          });
-        }
+        console.log('122');
+        saveLocationToDB();
         return true;
       }
 
@@ -141,30 +196,23 @@ const LocationButton = () => {
       setIsLocationOn(permissionGranted);
 
       if (permissionGranted) {
-        Geolocation.getCurrentPosition(info =>
-          setLocation((old: Location) => ({
-            ...old,
-            latitude: info.coords.latitude,
-            longitude: info.coords.longitude,
-          })),
-        );
-        await editDocument('users', user.id, {
-          location: new GeoPoint(
-            Number(location.latitude),
-            Number(location.latitude),
-          ),
-        });
+        console.log('201');
+        saveLocationToDB();
       }
       return permissionGranted;
     } catch (error) {
       console.log('permissionStatus error', error);
-      Alert.alert('Fejl opstået', 'Der opstod en fejl under adgangen', [
+      Alert.alert('Fejl opstået', 'Der opstod en fejl under lokationsadgang', [
         {
           text: 'Ok',
         },
       ]);
     }
   };
+
+  if (error) {
+    Alert.alert('Der er sket en fejl i hentning af position');
+  }
 
   return (
     <View style={isLocationOn ? styles.green : styles.red}>

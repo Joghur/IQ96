@@ -56,7 +56,7 @@ function Settings() {
             IQ med-lemmer kan ikke se din lokation.
           </Text>
           <LocationButton />
-          <Text style={styles.text}>Tryk her for at ændre.</Text>
+          <Text style={styles.text}>Tryk her (evt to tryk) for at ændre.</Text>
         </View>
         <CustomDivider />
         <Text style={{...styles.bold, ...styles.textShadow}}>IQ96 app</Text>

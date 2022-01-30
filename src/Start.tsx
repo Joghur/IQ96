@@ -51,6 +51,7 @@ const Start = () => {
   const checkStorage = async uid => {
     if (uid === undefined) return;
     const settings = await getData('settings');
+    const asyncLocationId = await getData('locationId');
     if (!settings) {
       console.log('firebase settingsData');
       const settingsData = await fetchDocuments('settings');
@@ -69,6 +70,9 @@ const Start = () => {
     const userData = await queryDocuments('users', 'uid', '==', uid);
     if (userData?.success?.length === 1) {
       setUser(userData.success[0]);
+      if (asyncLocationId) {
+        setUser(oldUser => ({...oldUser, locationId: asyncLocationId}));
+      }
     } else {
       console.log('Error happened in App - user: ', userData?.error);
       Alert.alert('Fejl under hentning af bruger data');

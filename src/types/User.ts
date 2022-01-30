@@ -1,5 +1,3 @@
-import Location from './Location';
-
 export type User = {
   id?: string;
   isAdmin: boolean;
@@ -10,5 +8,5 @@ export type User = {
   title: string;
   avatar?: string;
   firebaseId: string;
-  location: Location;
+  locationId?: string;
 };

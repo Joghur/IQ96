@@ -7,6 +7,12 @@ export const userState = atom({
     isAdmin: false,
     isBoard: false,
     isSuperAdmin: false,
+    name: '',
+    nick: '',
+    title: '',
+    avatar: '',
+    firebaseId: '',
+    locationId: '',
   },
 });
 
