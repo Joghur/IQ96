@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
 
 import Colors from '../constants/colors';
-import LocationButton from './LocationButton';
+import LocationInfo from './LocationInfo';
 
 const Banner = (props: {
   label:
@@ -24,7 +24,7 @@ const Banner = (props: {
           <Text style={styles.headerText}>{props.label}</Text>
         </View>
         <View style={{flex: 1, height: 1, backgroundColor: Colors.dark}} />
-        <LocationButton />
+        <LocationInfo />
       </View>
     </View>
   );

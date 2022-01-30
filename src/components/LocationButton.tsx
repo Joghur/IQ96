@@ -31,7 +31,6 @@ const LocationButton = () => {
       setIsLocationOn(false);
     } else {
       if (lok) {
-        console.log('33');
         Geolocation.getCurrentPosition(info =>
           setLocation((old: Location) => ({
             ...old,
@@ -39,7 +38,6 @@ const LocationButton = () => {
             longitude: info.coords.longitude,
           })),
         );
-        console.log('41');
         if (location) {
           setIsLocationOn(true);
           setUser((old: User) => ({
@@ -49,11 +47,10 @@ const LocationButton = () => {
           await editDocument('users', user.id, {
             location: new GeoPoint(
               Number(location.latitude),
-              Number(location.latitude),
+              Number(location.longitude),
             ),
           });
         }
-        console.log('56');
         return;
       }
       if (user.id) {
@@ -174,9 +171,13 @@ const LocationButton = () => {
       <Pressable
         onPress={handleChange}
         onLongPress={() =>
-          Alert.alert('Grøn betyder at IQ med-lemmer kan se din position')
+          Alert.alert(
+            'Grøn -> IQ med-lemmer kan se din position. Skift under indstillinger',
+          )
         }>
-        <Text>{isLocationOn ? 'Sender lokation' : '  Send Lokation'}</Text>
+        <Text>
+          {isLocationOn ? 'Sender lokation' : '  Sender ikke lokation'}
+        </Text>
       </Pressable>
     </View>
   );
@@ -188,8 +189,6 @@ const styles = StyleSheet.create({
   green: {
     backgroundColor: Colors.success,
     borderColor: Colors.lightSuccess,
-    position: 'absolute',
-    right: 100,
     borderWidth: 2,
     borderRadius: 20,
     padding: 7,
@@ -197,8 +196,6 @@ const styles = StyleSheet.create({
   red: {
     backgroundColor: Colors.error,
     borderColor: Colors.lightError,
-    position: 'absolute',
-    right: 100,
     borderWidth: 2,
     borderRadius: 20,
     padding: 7,

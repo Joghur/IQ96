@@ -10,6 +10,7 @@ import {userState} from '../../utils/appState';
 import {CustomDivider} from '../../components/CustomDivider';
 import User from '../../types/User';
 import Banner from '../../components/Banner';
+import LocationButton from '../../components/LocationButton';
 
 function Settings() {
   const user: User = useRecoilValue(userState);
@@ -32,13 +33,33 @@ function Settings() {
                 IT afdelingen
               </Text>
             )}
-            <Text style={styles.bold}>{user.name}</Text>
+
+            <Text style={{...styles.bold, ...styles.textShadow}}>
+              {user.name}
+            </Text>
             <Text style={styles.italic}>{user.nick}</Text>
             <Text style={styles.italic}>{user.title}</Text>
           </>
         )}
         <CustomDivider />
-        <Text>IQ96 app</Text>
+        <Text style={{...styles.bold, ...styles.textShadow}}>
+          Lokationsstatus
+        </Text>
+        <View style={styles.locationContainer}>
+          <Text style={styles.green}>Grøn</Text>
+          <Text style={styles.text}>
+            IQ med-lemmer kan se din lokation i denne app. Lokation bliver ikke
+            sendt andre steder hen.
+          </Text>
+          <Text style={styles.red}>Rød</Text>
+          <Text style={styles.text}>
+            IQ med-lemmer kan ikke se din lokation.
+          </Text>
+          <LocationButton />
+          <Text style={styles.text}>Tryk her for at ændre.</Text>
+        </View>
+        <CustomDivider />
+        <Text style={{...styles.bold, ...styles.textShadow}}>IQ96 app</Text>
         <Text>version {packageJson.version}</Text>
         <ButtonWithIcon
           title="Log ud"
@@ -59,11 +80,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.light,
   },
+  textShadow: {
+    textShadowOffset: {width: 2, height: 2},
+    textShadowRadius: 5,
+  },
   bold: {
     fontWeight: 'bold',
+    fontSize: 20,
   },
   italic: {
     fontStyle: 'italic',
+  },
+  locationContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 10,
+  },
+  green: {
+    color: Colors.success,
+  },
+  red: {
+    color: Colors.error,
+  },
+  text: {
+    alignItems: 'center',
+    paddingHorizontal: 30,
+    paddingBottom: 5,
   },
   board: {
     marginLeft: 70,
