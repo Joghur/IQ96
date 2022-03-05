@@ -15,7 +15,6 @@ import {
   deleteDocument,
   editDocument,
 } from '../utils/db';
-import MapIcons from '../types/MapIcons';
 
 const LocationButton = () => {
   const [isLocationOn, setIsLocationOn] = useRecoilState(lokationState);
@@ -128,7 +127,7 @@ const LocationButton = () => {
               Number(location.longitude),
             ),
             timestamp: new Date(),
-            type: 'location-pin',
+            type: 'user',
           });
         } else {
           console.log('150');
@@ -139,7 +138,7 @@ const LocationButton = () => {
               Number(location.longitude),
             ),
             timestamp: new Date(),
-            type: 'location-pin',
+            type: 'user',
           });
           if (locationId.success) {
             console.log('160');

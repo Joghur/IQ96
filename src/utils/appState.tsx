@@ -11,7 +11,7 @@ export const userState = atom({
     nick: '',
     title: '',
     avatar: '',
-    firebaseId: '',
+    uid: '',
     locationId: '',
   },
 });

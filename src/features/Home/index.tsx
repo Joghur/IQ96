@@ -1,5 +1,5 @@
 import React, {memo, useEffect, useLayoutEffect, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {Divider} from 'react-native-elements';
 
@@ -59,39 +59,44 @@ function Home({navigation}) {
   }, [event]);
 
   return (
-    <>
-      <Banner label={'Overblik'} />
-      <View style={styles.container}>
-        <Text style={styles.welcome}>{t('welcome')}</Text>
-        <Divider orientation="horizontal" width={1} />
-        <View style={styles.event}>
-          <Text style={styles.upcomingEvent}>{t('upcoming')}</Text>
-          {(!!event?.endDate || !!event?.startDate) && (
-            <>
-              {!!dateCounter && <Text>{dateCounter}</Text>}
-              {diff < 9 && diff >= -4 && <Event event={event} />}
-              {diff >= 9 && (
-                <>
-                  <Text style={styles.upcomingEvent}>
-                    {event?.type === 'tour'
-                      ? `${handleType(event?.type)} de ${event.city}`
-                      : handleType(event?.type)}
-                  </Text>
-                  <Text>
-                    {convertEpochSecondsToDateString(event?.startDate, 'D/MMM')}
-                  </Text>
-                </>
-              )}
-            </>
-          )}
-          {!event?.endDate && !event?.startDate && (
-            <>
-              <Text style={styles.noUpcomingEvent}>{t('noDate')}</Text>
-            </>
-          )}
+    <View>
+      <ScrollView>
+        <Banner label={'Overblik'} />
+        <View style={styles.container}>
+          <Text style={styles.welcome}>{t('welcome')}</Text>
+          <Divider orientation="horizontal" width={1} />
+          <View style={styles.event}>
+            <Text style={styles.upcomingEvent}>{t('upcoming')}</Text>
+            {(!!event?.endDate || !!event?.startDate) && (
+              <>
+                {!!dateCounter && <Text>{dateCounter}</Text>}
+                {diff < 9 && diff >= -4 && <Event event={event} />}
+                {diff >= 9 && (
+                  <>
+                    <Text style={styles.upcomingEvent}>
+                      {event?.type === 'tour'
+                        ? `${handleType(event?.type)} de ${event.city}`
+                        : handleType(event?.type)}
+                    </Text>
+                    <Text>
+                      {convertEpochSecondsToDateString(
+                        event?.startDate,
+                        'D/MMM',
+                      )}
+                    </Text>
+                  </>
+                )}
+              </>
+            )}
+            {!event?.endDate && !event?.startDate && (
+              <>
+                <Text style={styles.noUpcomingEvent}>{t('noDate')}</Text>
+              </>
+            )}
+          </View>
         </View>
-      </View>
-    </>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -108,6 +113,7 @@ const styles = StyleSheet.create({
   },
   upcomingEvent: {
     fontWeight: 'bold',
+    marginTop: 15,
   },
   noUpcomingEvent: {
     alignContent: 'center',
@@ -115,6 +121,8 @@ const styles = StyleSheet.create({
   },
   event: {
     alignItems: 'center',
-    marginTop: 20,
+    justifyContent: 'flex-start',
+    marginTop: 100,
+    height: '100%',
   },
 });

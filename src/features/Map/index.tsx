@@ -1,9 +1,10 @@
 import React, {memo, useEffect, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Button} from 'react-native';
 import {useRecoilValue} from 'recoil';
 import MapView, {Marker} from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Geolocation from '@react-native-community/geolocation';
 
 import Colors from '../../constants/colors';
@@ -20,7 +21,7 @@ function Map() {
   const [userMapLocation, setUserMapLocation] = useState<Location>(null);
   const [mapData, setMapData] = useState<Location[]>([]);
   const [error, setError] = useState(null);
-  //   const [region, setRegion] = useState(null);
+  const [region, setRegion] = useState(null);
 
   console.log('userMapLocation', userMapLocation);
   console.log('mapData', mapData);
@@ -62,14 +63,16 @@ function Map() {
     fetchMapData();
   }, []);
 
-  //   const handleRegionChange = type => {
-  //     console.log('----------------------------handleRegionChange');
-  //     setRegion(() => ({
-  //       ...userMapLocation,
-  //       latitudeDelta: 0.0422,
-  //       longitudeDelta: 0.0121,
-  //     }));
-  //   };
+  const handleRegionChange = () => {
+    console.log('----------------------------handleRegionChange');
+    setRegion(() => ({
+      //   ...userMapLocation,
+      latitude: 55.3,
+      longitude: 12.3,
+      latitudeDelta: 0.0422,
+      longitudeDelta: 0.0121,
+    }));
+  };
 
   if (error) {
     Alert.alert('Der er sket en fejl i hentning af position');
@@ -79,7 +82,7 @@ function Map() {
     <>
       <Banner label={'Kort'} />
       <View>
-        {/* <Button title="Dig" onPress={() => handleRegionChange('user')} /> */}
+        <Button title="Dig" onPress={() => handleRegionChange('user')} />
       </View>
       <View style={styles.container}>
         <CustomDivider />
@@ -91,18 +94,19 @@ function Map() {
                 userMapLocation.latitude || mapData[0].location?.latitude,
               longitude:
                 userMapLocation.longitude || mapData[0].location?.longitude,
-              latitudeDelta: 0.0422,
-              longitudeDelta: 0.0121,
+              latitudeDelta: 0.0211,
+              longitudeDelta: 0.006,
             }}
-            // onRegionChange={handleRegionChange}
-          >
+            onRegionChange={region}>
             <Marker
               coordinate={{
                 latitude: userMapLocation?.latitude,
                 longitude: userMapLocation?.longitude,
               }}>
-              <Feather name={'map-pin'} color={Colors.success} size={22} />
-              <Text>{user.nick}</Text>
+              <View style={styles.mapPointer}>
+                <Feather name={'map-pin'} color={Colors.success} size={22} />
+                <Text>{user.nick}</Text>
+              </View>
             </Marker>
             {mapData.map(point => {
               console.log('point', point);
@@ -115,27 +119,70 @@ function Map() {
                 point?.location?.longitude,
               );
 
-              let color;
+              let color =
+                point.madeBy === 'app' ? Colors.error : Colors.success;
               let icon;
+              let ShowIcon;
+              const size = 20;
               switch (point.type) {
+                case 'hotel':
+                  icon = 'hotel';
+                  ShowIcon = <Icon name={icon} color={color} size={size} />;
+                  break;
+
                 case 'restaurant':
-                  color = Colors.error;
                   icon = 'restaurant';
+                  ShowIcon = <Icon name={icon} color={color} size={size} />;
                   break;
 
                 case 'user':
                   color = '#' + Math.random().toString(16).substr(-6);
                   icon = 'location-pin';
+                  ShowIcon = <Icon name={icon} color={color} size={size} />;
                   break;
 
                 case 'music':
-                  color = Colors.dark;
                   icon = 'music-note';
+                  ShowIcon = (
+                    <MaterialCommunityIcons
+                      name={icon}
+                      color={color}
+                      size={size}
+                    />
+                  );
+                  break;
+
+                case 'bar':
+                  icon = 'glass-cocktail';
+                  ShowIcon = (
+                    <MaterialCommunityIcons
+                      name={icon}
+                      color={color}
+                      size={size}
+                    />
+                  );
+                  break;
+
+                case 'sightseeing':
+                  icon = 'apple-keyboard-command';
+                  ShowIcon = (
+                    <MaterialCommunityIcons
+                      name={icon}
+                      color={color}
+                      size={size}
+                    />
+                  );
                   break;
 
                 default:
-                  color = Colors.error;
-                  icon = 'location-pin';
+                  icon = 'question';
+                  ShowIcon = (
+                    <MaterialCommunityIcons
+                      name={icon}
+                      color={color}
+                      size={size}
+                    />
+                  );
               }
 
               console.log('color', color);
@@ -150,7 +197,7 @@ function Map() {
                     title={point.title ? point.title : ''}
                     description={point.description ? point.description : ''}>
                     <View style={styles.mapPointer}>
-                      <Icon name={icon} color={color} size={18} />
+                      {ShowIcon}
                       <Text>{point.nick}</Text>
                     </View>
                   </Marker>
