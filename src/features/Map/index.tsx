@@ -1,5 +1,5 @@
 import React, {memo, useEffect, useState} from 'react';
-import {StyleSheet, Text, View, Button} from 'react-native';
+import {StyleSheet, Text, View, Button, Dimensions} from 'react-native';
 import {useRecoilValue} from 'recoil';
 import MapView, {Marker} from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -14,6 +14,10 @@ import User from '../../types/User';
 import Banner from '../../components/Banner';
 import Location from '../../types/Location';
 import {fetchDocuments} from '../../utils/db';
+
+const randomColor = () => {
+  return '#' + Math.random().toString(16).substr(-6);
+};
 
 function Map() {
   const user: User = useRecoilValue(userState);
@@ -33,6 +37,8 @@ function Map() {
       ...old,
       latitude: info.coords.latitude,
       longitude: info.coords.longitude,
+      latitudeDelta: 0.0422,
+      longitudeDelta: 0.0121,
     }));
   };
   const geo_error = error => {
@@ -64,17 +70,36 @@ function Map() {
     fetchMapData();
   }, []);
 
-  const handleRegionChange = () => {
+  const handleRegionChange = point => {
     console.log('----------------------------handleRegionChange');
-    setRegion(() => ({
-      //   ...userMapLocation,
-      latitude: 55.3,
-      longitude: 12.3,
+    const location = {
+      latitude: null,
+      longitude: null,
       latitudeDelta: 0.0422,
       longitudeDelta: 0.0121,
-    }));
-  };
+    };
+    switch (point) {
+      case 'user':
+        setRegion(() => ({
+          ...location,
+          latitude: userMapLocation.latitude,
+          longitude: userMapLocation.longitude,
+        }));
+        break;
 
+      default:
+        const poi = mapData.filter(p => p.title === point);
+        if (poi.length === 1) {
+          console.log('poi', poi);
+          setRegion(() => ({
+            ...location,
+            latitude: poi[0].location.latitude,
+            longitude: poi[0].location.longitude,
+          }));
+        }
+        break;
+    }
+  };
   if (error) {
     Alert.alert('Der er sket en fejl i hentning af position');
   }
@@ -82,9 +107,26 @@ function Map() {
   return (
     <>
       <Banner label={'Kort'} />
-      <View>
-        <Button title="Dig" onPress={() => handleRegionChange('user')} />
-        <Button title="Refresh" onPress={() => fetchMapData()} />
+      <View style={styles.buttonContainer}>
+        <View style={styles.button}>
+          <Button title="Dig" onPress={() => handleRegionChange('user')} />
+        </View>
+        {mapData.map(p => (
+          <View style={styles.button}>
+            <Button
+              color={p.madeBy === 'app' ? Colors.error : randomColor()}
+              title={p.title}
+              onPress={() => handleRegionChange(p.title)}
+            />
+          </View>
+        ))}
+        <View style={styles.button}>
+          <Button
+            color={randomColor()}
+            title="Refresh"
+            onPress={() => fetchMapData()}
+          />
+        </View>
       </View>
       <View style={styles.container}>
         <CustomDivider />
@@ -99,12 +141,14 @@ function Map() {
               latitudeDelta: 0.0211,
               longitudeDelta: 0.006,
             }}
-            onRegionChange={region}>
+            region={region}>
             <Marker
               coordinate={{
                 latitude: userMapLocation?.latitude,
                 longitude: userMapLocation?.longitude,
-              }}>
+              }}
+              title="{marker.title}"
+              description="{marker.description}">
               <View style={styles.mapPointer}>
                 <Feather name={'map-pin'} color={Colors.success} size={22} />
                 <Text>{user.nick}</Text>
@@ -138,7 +182,7 @@ function Map() {
                   break;
 
                 case 'user':
-                  color = '#' + Math.random().toString(16).substr(-6);
+                  color = randomColor();
                   icon = 'location-pin';
                   ShowIcon = <Icon name={icon} color={color} size={size} />;
                   break;
@@ -224,5 +268,11 @@ const styles = StyleSheet.create({
   },
   mapPointer: {
     alignItems: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+  },
+  button: {
+    width: Dimensions.get('window').width / 4,
   },
 });
