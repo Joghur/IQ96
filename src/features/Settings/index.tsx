@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useRecoilValue} from 'recoil';
 
 import {ButtonWithIcon} from '../../components/ButtonWithIcon';
@@ -11,7 +11,7 @@ import {CustomDivider} from '../../components/CustomDivider';
 import User from '../../types/User';
 import Banner from '../../components/Banner';
 import LocationButton from '../../components/LocationButton';
-import {saveData} from '../../utils/db';
+import {queryDocuments, saveData, deleteDocument} from '../../utils/db';
 
 function Settings() {
   const user = useRecoilValue(userState) as User;
@@ -19,26 +19,34 @@ function Settings() {
   console.log('user', user);
 
   const handleAdd = async () => {
-    // const u: User = {
-    //   isAdmin: true,
-    //   isBoard: false,
-    //   isSuperAdmin: false,
-    //   name: 'string',
-    //   nick: 'string',
-    //   title: 'string',
-    //   avatar: 'string',
-    //   uid: 'string',
-    //   locationId: 'string',
-    // };
-    // await saveData('users', u);
+    const u: User = {
+      isAdmin: true,
+      isBoard: false,
+      isSuperAdmin: false,
+      name: 'string',
+      nick: 'string',
+      title: 'string',
+      avatar: 'string',
+      uid: 'string',
+      locationId: 'string',
+    };
+    await saveData('users', u);
+    const loc = {
+      madeBy: 'app',
+      nick: 'Milling Hotel Windsor',
+      type: 'hotel',
+    };
+    await saveData('map', loc);
+  };
 
-    // const loc = {
-    //   madeBy: 'app',
-    //   nick: 'Milling Hotel Windsor',
-    //   type: 'hotel',
-    // };
-
-    // await saveData('map', loc);
+  const handleResetChat = async () => {
+    const chats = await queryDocuments('chats', 'group', '==', 'general');
+    if (chats.success.length > 0) {
+      for (const message of chats.success) {
+        console.log('message', message.id);
+        deleteDocument('chats', message.id);
+      }
+    }
   };
 
   return (
@@ -95,21 +103,27 @@ function Settings() {
             onPress={() => logOut()}
           />
           <CustomDivider horizontalWidth={25} />
-          {/* {user.isSuperAdmin && (
+          {user.isSuperAdmin && (
             <>
               <Text style={{...styles.bold, ...styles.textShadow}}>
-                Bruger administration
+                Administration
               </Text>
               <Text style={styles.text}>
                 Brug kun hvis du har adgang til DB konsollen
               </Text>
               <ButtonWithIcon
-                title="Tilføj"
+                title="Tilføj bruger"
                 icon="plus"
                 onPress={() => handleAdd()}
               />
+              <Text style={styles.text}></Text>
+              <ButtonWithIcon
+                title="Tøm chat"
+                icon="minus"
+                onPress={() => handleResetChat()}
+              />
             </>
-          )} */}
+          )}
         </View>
       </ScrollView>
     </View>
@@ -124,6 +138,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: Colors.light,
+    height: Dimensions.get('window').height,
   },
   textShadow: {
     textShadowOffset: {width: 2, height: 2},

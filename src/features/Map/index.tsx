@@ -44,15 +44,16 @@ function Map() {
   };
 
   const fetchMapData = async () => {
-    const mapDoc = await fetchDocuments('map');
-    if (mapDoc?.success) {
-      // remove user location as may be in list and could be rendered twice
+    const mapDocs = await fetchDocuments('map');
+    console.log('mapDocs', mapDocs);
+    if (mapDocs?.success) {
+      // remove user location as it may be in list and could be rendered twice
       setMapData(() =>
-        mapDoc.success.filter(doc => doc.id !== user?.locationId),
+        mapDocs.success.filter(doc => doc.id !== user?.locationId),
       );
       return;
     }
-    setError(() => mapDoc.error);
+    setError(() => mapDocs.error);
   };
 
   useEffect(() => {
@@ -83,6 +84,7 @@ function Map() {
       <Banner label={'Kort'} />
       <View>
         <Button title="Dig" onPress={() => handleRegionChange('user')} />
+        <Button title="Refresh" onPress={() => fetchMapData()} />
       </View>
       <View style={styles.container}>
         <CustomDivider />

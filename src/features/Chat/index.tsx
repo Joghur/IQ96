@@ -1,14 +1,9 @@
-import React, {
-  memo,
-  useState,
-  useCallback,
-  useLayoutEffect,
-  useEffect,
-} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {memo, useState, useCallback, useEffect} from 'react';
+import {Button, StyleSheet, View} from 'react-native';
 import {GiftedChat} from 'react-native-gifted-chat';
 import {useRecoilValue} from 'recoil';
 import 'dayjs/locale/da';
+import {v4 as uuidv4} from 'uuid';
 
 import Banner from '../../components/Banner';
 import Colors from '../../constants/colors';
@@ -19,24 +14,24 @@ import {queryDocuments, saveData} from '../../utils/db';
 import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {getData} from '../../utils/async';
 
-const quickReplies = {
-  type: 'radio', // or 'checkbox',
-  keepIt: true,
-  values: [
-    {
-      title: '😋 Yes',
-      value: 'yes',
-    },
-    {
-      title: '📷 Yes, let me show you with a picture!',
-      value: 'yes_picture',
-    },
-    {
-      title: '😞 Nope. What?',
-      value: 'no',
-    },
-  ],
-};
+// const quickReplies = {
+//   type: 'radio', // or 'checkbox',
+//   keepIt: true,
+//   values: [
+//     {
+//       title: '😋 Yes',
+//       value: 'yes',
+//     },
+//     {
+//       title: '📷 Yes, let me show you with a picture!',
+//       value: 'yes_picture',
+//     },
+//     {
+//       title: '😞 Nope. What?',
+//       value: 'no',
+//     },
+//   ],
+// };
 
 function Chat() {
   const iqUser: User = useRecoilValue(userState);
@@ -53,9 +48,9 @@ function Chat() {
     retrieveSettings();
   }, []);
 
-  useLayoutEffect(() => {
+  const handleRefresh = () => {
     fetchMessages();
-  }, [group]);
+  };
 
   const onSend = useCallback((messages = []) => {
     console.log('onSend messages', messages);
@@ -64,13 +59,15 @@ function Chat() {
     );
     const {_id, createdAt, text, user} = messages[0];
     console.log('_id, createdAt, text, user', _id, createdAt, text, user);
+    // console.log('uuidv4();', uuidv4());
     saveData('chats', {
       _id,
       createdAt,
       text,
       user: {
-        ...user,
-        avatar: iqUser.avatar,
+        _id: iqUser.uid,
+        id: iqUser.uid,
+        name: iqUser.nick,
       },
       group,
     });
@@ -83,11 +80,17 @@ function Chat() {
 
   const fetchMessages = async () => {
     let result = [];
+    let sortedResults = [];
     result = await queryDocuments('chats', 'group', '==', group);
-    // console.log('result.success', result.success);
     // console.log('!!result.success', !!result.success);
+
+    if (result.success.length > 0) {
+      sortedResults = result.success.sort((a, b) => b.createdAt - a.createdAt);
+    }
+
+    console.log('sortedResults', sortedResults);
     setMessages(() =>
-      result.success.map(message => ({
+      sortedResults.map(message => ({
         ...message,
         createdAt: convertEpochSecondsToDateString(
           message.createdAt?.seconds,
@@ -102,19 +105,20 @@ function Chat() {
       {settings?.baseUrl && settings?.media && (
         <View style={styles.container}>
           <Banner label={'Chat'} />
+          <Button onPress={handleRefresh} title="Refresh" />
           <GiftedChat
             messages={messages}
+            renderUsernameOnMessage
             onSend={messages => onSend(messages)}
             user={{
-              _id: iqUser.id,
+              _id: iqUser.uid,
               name: iqUser.nick,
-              avatar: `${settings.baseUrl} + ${settings.media} + '/' + ${iqUser.avatar}`,
             }}
-            quickReplies={quickReplies}
+            // quickReplies={quickReplies}
             locale="da"
             timeFormat="HH:mm"
             dateFormat="dddd D MMM YYYY"
-            onQuickReply={this.onQuickReply}
+            // onQuickReply={this.onQuickReply}
           />
         </View>
       )}

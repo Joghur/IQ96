@@ -1,5 +1,5 @@
 import React, {memo, useEffect, useLayoutEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {Divider} from 'react-native-elements';
 
@@ -105,6 +105,7 @@ export default memo(Home);
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.light,
+    height: Dimensions.get('window').height,
   },
   welcome: {
     fontSize: 20,

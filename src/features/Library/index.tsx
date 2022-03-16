@@ -6,7 +6,7 @@ import LibraryHome from './LibraryHome';
 import Song from './Song';
 // import Summary from './Summary';
 // import Logs from './Logs';
-import Letters from './Letters';
+// import Letters from './Letters';
 import PdfScreen from '../../components/PdfScreen';
 
 const Stack = createNativeStackNavigator();
@@ -25,7 +25,7 @@ const Library = () => {
       <Stack.Screen name="Song" component={Song} options={stackoptions} />
       {/* <Stack.Screen name="Summary" component={Summary} options={stackoptions} /> */}
       {/* <Stack.Screen name="Logs" component={Logs} options={stackoptions} /> */}
-      <Stack.Screen name="Letters" component={Letters} options={stackoptions} />
+      {/* <Stack.Screen name="Letters" component={Letters} options={stackoptions} /> */}
       <Stack.Screen
         name="PdfScreen"
         component={PdfScreen}

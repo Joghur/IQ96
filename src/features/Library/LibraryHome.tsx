@@ -27,11 +27,11 @@ function LibraryHome({navigation}: any) {
     <View style={styles.container}>
       <Banner label={'Bibliotheket'} />
       <View style={styles.buttonContainer}>
-        <ButtonWithIcon
+        {/* <ButtonWithIcon
           title="IQ Breve"
           icon="envelope"
           onPress={() => navigation.navigate('Letters')}
-        />
+        /> */}
         {song && (
           <ButtonWithIcon
             title="IQ Sangen"
