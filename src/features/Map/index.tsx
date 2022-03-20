@@ -84,17 +84,29 @@ function Map() {
           ...location,
           latitude: userMapLocation.latitude,
           longitude: userMapLocation.longitude,
+          latitudeDelta: 0.0422,
+          longitudeDelta: 0.0121,
         }));
         break;
 
       default:
-        const poi = mapData.filter(p => p.title === point);
+        console.log('default');
+        const poi = mapData.filter(p => {
+          console.log('p 94 /------', p);
+          console.log('point', point);
+          if (p?.title) {
+            return p?.title === point;
+          }
+          return p?.nick === point;
+        });
+        console.log('poi', poi);
         if (poi.length === 1) {
-          console.log('poi', poi);
           setRegion(() => ({
             ...location,
             latitude: poi[0].location.latitude,
             longitude: poi[0].location.longitude,
+            latitudeDelta: 0.0422,
+            longitudeDelta: 0.0121,
           }));
         }
         break;
@@ -111,15 +123,19 @@ function Map() {
         <View style={styles.button}>
           <Button title="Dig" onPress={() => handleRegionChange('user')} />
         </View>
-        {mapData.map(p => (
-          <View style={styles.button}>
-            <Button
-              color={p.madeBy === 'app' ? Colors.error : randomColor()}
-              title={p.title}
-              onPress={() => handleRegionChange(p.title)}
-            />
-          </View>
-        ))}
+        {mapData.map(p => {
+          console.log('map 113 - p', p);
+          console.log('user', user);
+          return (
+            <View key={p.id} style={styles.button}>
+              <Button
+                color={p.madeBy === 'app' ? Colors.error : randomColor()}
+                title={p.title ? p.title : p.nick}
+                onPress={() => handleRegionChange(p.title ? p.title : p.nick)}
+              />
+            </View>
+          );
+        })}
         <View style={styles.button}>
           <Button
             color={randomColor()}
@@ -138,8 +154,8 @@ function Map() {
                 userMapLocation.latitude || mapData[0].location?.latitude,
               longitude:
                 userMapLocation.longitude || mapData[0].location?.longitude,
-              latitudeDelta: 0.0211,
-              longitudeDelta: 0.006,
+              latitudeDelta: 0.0422,
+              longitudeDelta: 0.0121,
             }}
             region={region}>
             <Marker
@@ -271,6 +287,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    height: 100,
   },
   button: {
     width: Dimensions.get('window').width / 4,

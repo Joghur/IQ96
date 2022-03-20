@@ -85,11 +85,20 @@ const LocationButton = () => {
       setLocation(null);
       if (user.locationId) {
         console.log('92');
+        console.log('88- user.locationId');
         await deleteDocument('map', user.locationId);
         setUser(oldUser => ({
           ...oldUser,
           locationId: null,
         }));
+        await editDocument('users', user.id, {
+          location: new GeoPoint(
+            Number(location.latitude),
+            Number(location.longitude),
+          ),
+          timestamp: new Date(),
+          locationId: '',
+        });
       }
       return;
     }
@@ -147,6 +156,14 @@ const LocationButton = () => {
               ...oldUser,
               locationId: locationId.success,
             }));
+            await editDocument('users', user.id, {
+              location: new GeoPoint(
+                Number(location.latitude),
+                Number(location.longitude),
+              ),
+              timestamp: new Date(),
+              locationId: locationId.success,
+            });
           }
         }
       } catch (error) {
