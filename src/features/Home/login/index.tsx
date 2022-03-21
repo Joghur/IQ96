@@ -7,6 +7,7 @@ import {ButtonWithIcon} from '../../../components/ButtonWithIcon';
 import {logIn, resetPassword} from '../../../utils/auth';
 import Colors from '../../../constants/colors';
 import {storeData, getData} from '../../../utils/async';
+import packageJson from '../../../../package.json';
 
 type LoginCreds = {
   email: string;
@@ -147,6 +148,8 @@ const Login = () => {
               {reset ? 'Login' : 'Glemt kodeord'}
             </Text>
           </View>
+          <Text style={styles.version}>IQ96 app</Text>
+          <Text>version {packageJson.version}</Text>
         </View>
       </ScrollView>
     </View>
@@ -173,5 +176,12 @@ const styles = StyleSheet.create({
   },
   resetText: {
     alignItems: 'center',
+  },
+  version: {
+    fontWeight: 'bold',
+    fontSize: 12,
+    textShadowOffset: {width: 2, height: 2},
+    textShadowRadius: 5,
+    marginTop: 50,
   },
 });
