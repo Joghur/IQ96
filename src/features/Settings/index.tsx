@@ -102,12 +102,23 @@ function Settings() {
             icon="power-off"
             onPress={() => logOut()}
           />
-          <CustomDivider horizontalWidth={25} />
           {user.isSuperAdmin && (
             <>
+              <CustomDivider horizontalWidth={25} />
               <Text style={{...styles.bold, ...styles.textShadow}}>
                 Administration
               </Text>
+              <Text style={styles.text}></Text>
+              <ButtonWithIcon
+                title="Tøm chat"
+                icon="minus"
+                onPress={() => handleResetChat()}
+              />
+              <Text style={styles.text}></Text>
+            </>
+          )}
+          {user.isSuperAdmin && (
+            <>
               <Text style={styles.text}>
                 Brug kun hvis du har adgang til DB konsollen
               </Text>
@@ -115,12 +126,6 @@ function Settings() {
                 title="Tilføj bruger"
                 icon="plus"
                 onPress={() => handleAdd()}
-              />
-              <Text style={styles.text}></Text>
-              <ButtonWithIcon
-                title="Tøm chat"
-                icon="minus"
-                onPress={() => handleResetChat()}
               />
             </>
           )}

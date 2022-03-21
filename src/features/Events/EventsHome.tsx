@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import {FAB, Overlay} from 'react-native-elements';
+import {useRecoilValue} from 'recoil';
 
 import AddEvent from './AddEvent';
 import Event from './Event';
@@ -17,6 +18,8 @@ import {convertEpochSecondsToDateString} from '../../utils/dates';
 import {handleType} from '../../utils/convertEventType';
 import Colors from '../../constants/colors';
 import {EventType} from '../../types/Event';
+import User from '../../types/User';
+import {userState} from '../../utils/appState';
 
 const EventsHome: React.FunctionComponent = () => {
   const initEvent: EventType = {
@@ -36,6 +39,7 @@ const EventsHome: React.FunctionComponent = () => {
   const [event, setEvent] = useState<EventType>(initEvent);
   const [page, setPage] = useState('main');
   const [visible, setVisible] = useState(false);
+  const user = useRecoilValue(userState) as User;
 
   useEffect(() => {
     const eventsList = async () => {
@@ -88,10 +92,17 @@ const EventsHome: React.FunctionComponent = () => {
     );
   };
 
+  if (!user) {
+    console.log('no user EventsHome');
+    return;
+  }
+  console.log('user', user);
+  const editorial = user?.isSuperAdmin || user?.isBoard || user?.isAdmin;
+
   return (
     <SafeAreaView style={styles.container}>
       <Banner label={'Begivenheder'} />
-      {page !== 'add' && page !== 'edit' && (
+      {page !== 'add' && page !== 'edit' && editorial && (
         <FAB
           icon={{name: 'add', size: 24, color: Colors.button}}
           buttonStyle={{
@@ -144,18 +155,22 @@ const EventsHome: React.FunctionComponent = () => {
               onBackdropPress={toggleOverlay}
               overlayStyle={styles.overlay}>
               {!!event?.id && (
-                <Event event={event} onDelete={onDelete} onEdit={onEdit} />
+                <Event
+                  event={event}
+                  onDelete={editorial && onDelete}
+                  onEdit={editorial && onEdit}
+                />
               )}
             </Overlay>
           </View>
         )}
-        {page === 'add' && (
+        {page === 'add' && editorial && (
           <AddEvent
             backLink={() => setPage('main')}
             // addActivity={() => setPage('activity')}
           />
         )}
-        {page === 'edit' && (
+        {page === 'edit' && editorial && (
           <AddEvent
             backLink={() => setPage('main')}
             // addActivity={() => setPage('activity')}
