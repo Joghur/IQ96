@@ -227,7 +227,22 @@ const LocationButton = () => {
   };
 
   if (error) {
-    Alert.alert('Der er sket en fejl i hentning af position');
+    let errorMessage;
+    switch (error.code) {
+      case 1:
+        errorMessage = 'Lokation er slået fra';
+        break;
+
+      case 2:
+        errorMessage =
+          'Kan ikke hente position. Prøv at gå udenfor, forsøg igen og genstart app';
+        break;
+
+      default:
+        errorMessage = 'Lokation timeout';
+        break;
+    }
+    Alert.alert(errorMessage);
   }
 
   return (

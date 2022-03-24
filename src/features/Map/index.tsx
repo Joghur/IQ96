@@ -1,11 +1,12 @@
 import React, {memo, useEffect, useState} from 'react';
-import {StyleSheet, Text, View, Button, Dimensions} from 'react-native';
+import {Alert, StyleSheet, Text, View, Button, Dimensions} from 'react-native';
 import {useRecoilValue} from 'recoil';
 import MapView, {Marker} from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Geolocation from '@react-native-community/geolocation';
+import {GeoPoint} from 'firebase/firestore/lite';
 
 import Colors from '../../constants/colors';
 import {userState} from '../../utils/appState';
@@ -13,7 +14,7 @@ import {CustomDivider} from '../../components/CustomDivider';
 import User from '../../types/User';
 import Banner from '../../components/Banner';
 import Location from '../../types/Location';
-import {fetchDocuments} from '../../utils/db';
+import {fetchDocuments, saveData} from '../../utils/db';
 
 const randomColor = () => {
   return '#' + Math.random().toString(16).substr(-6);
@@ -25,6 +26,7 @@ function Map() {
   const [userMapLocation, setUserMapLocation] = useState<Location>(null);
   const [mapData, setMapData] = useState<Location[]>([]);
   const [error, setError] = useState(null);
+  const [mapError, setMapError] = useState(null);
   const [region, setRegion] = useState(null);
 
   console.log('userMapLocation', userMapLocation);
@@ -49,9 +51,8 @@ function Map() {
     timeout: 5000,
   };
 
-  const fetchMapData = async () => {
+  const fetchMapAndUserData = async () => {
     const mapDocs = await fetchDocuments('map');
-    console.log('mapDocs', mapDocs);
     if (mapDocs?.success) {
       // remove user location as it may be in list and could be rendered twice
       setMapData(() =>
@@ -59,15 +60,14 @@ function Map() {
       );
       return;
     }
-    setError(() => mapDocs.error);
+
+    setMapError(() => mapDocs.error);
   };
 
   useEffect(() => {
+    fetchMapAndUserData();
     // users map location
     Geolocation.getCurrentPosition(geo_success, geo_error, geo_options);
-
-    // other locations
-    fetchMapData();
   }, []);
 
   const handleRegionChange = point => {
@@ -82,8 +82,8 @@ function Map() {
       case 'user':
         setRegion(() => ({
           ...location,
-          latitude: userMapLocation.latitude,
-          longitude: userMapLocation.longitude,
+          latitude: userMapLocation?.latitude || user?.location?.latitude,
+          longitude: userMapLocation?.longitude || user?.location?.longitude,
           latitudeDelta: 0.0422,
           longitudeDelta: 0.0121,
         }));
@@ -100,7 +100,7 @@ function Map() {
           return p?.nick === point;
         });
         console.log('poi', poi);
-        if (poi.length === 1) {
+        if (poi.length > 0) {
           setRegion(() => ({
             ...location,
             latitude: poi[0].location.latitude,
@@ -112,20 +112,82 @@ function Map() {
         break;
     }
   };
-  if (error) {
-    Alert.alert('Der er sket en fejl i hentning af position');
+
+  const handlePress = e => {
+    console.log(e.nativeEvent);
+  };
+
+  const handleLongPress = async e => {
+    console.log(e.nativeEvent);
+    const location = e.nativeEvent.coordinate;
+
+    const mapText = 'Den fede Fingerlicking';
+    const popupTitleAndButtonName = 'Fed bar';
+    const popupText = `Fed bar Set af ${user.nick}`;
+    const type = 'restaurant';
+    const madeBy = 'user';
+
+    const newMapObject = {
+      location: new GeoPoint(
+        Number(location.latitude),
+        Number(location.longitude),
+      ),
+      description: popupText,
+      title: popupTitleAndButtonName,
+      type,
+      madeBy,
+      nick: mapText,
+    };
+
+    const newMapObjectId = await saveData('map', newMapObject);
+
+    if (newMapObjectId.success) {
+      fetchMapAndUserData();
+    }
+  };
+
+  if (error || mapError) {
+    if (error) {
+      let errorMessage;
+      switch (error?.code) {
+        case 1:
+          errorMessage = 'Lokation er slået fra';
+          break;
+
+        case 2:
+          errorMessage =
+            'Kan ikke hente position. Prøv at gå udenfor og genstart app';
+          break;
+
+        default:
+          errorMessage = 'Lokation timeout';
+          break;
+      }
+      //   Alert.alert(errorMessage);
+      console.error('errorMessage', errorMessage);
+    }
+    if (mapError) {
+      Alert.alert(mapError);
+    }
   }
+
+  const loc1 = Boolean(userMapLocation?.latitude && userMapLocation?.longitude);
+  const loc2 = Boolean(
+    mapData[0]?.location?.latitude && mapData[0]?.location?.longitude,
+  );
+  const loc3 = Boolean(user?.location?.latitude && user?.location?.longitude);
+  const locationPresent = loc1 || loc2 || loc3;
 
   return (
     <>
       <Banner label={'Kort'} />
       <View style={styles.buttonContainer}>
-        <View style={styles.button}>
-          <Button title="Dig" onPress={() => handleRegionChange('user')} />
-        </View>
+        {userMapLocation?.latitude && userMapLocation?.longitude && (
+          <View style={styles.button}>
+            <Button title="Dig" onPress={() => handleRegionChange('user')} />
+          </View>
+        )}
         {mapData.map(p => {
-          console.log('map 113 - p', p);
-          console.log('user', user);
           return (
             <View key={p.id} style={styles.button}>
               <Button
@@ -140,47 +202,45 @@ function Map() {
           <Button
             color={randomColor()}
             title="Refresh"
-            onPress={() => fetchMapData()}
+            onPress={() => fetchMapAndUserData()}
           />
         </View>
       </View>
       <View style={styles.container}>
         <CustomDivider />
-        {userMapLocation?.latitude && userMapLocation?.longitude && (
+        {locationPresent && mapData && (
           <MapView
             style={{...StyleSheet.absoluteFillObject}}
             initialRegion={{
               latitude:
-                userMapLocation.latitude || mapData[0].location?.latitude,
+                userMapLocation?.latitude ||
+                mapData[0]?.location?.latitude ||
+                user?.location?.latitude,
               longitude:
-                userMapLocation.longitude || mapData[0].location?.longitude,
+                userMapLocation?.longitude ||
+                mapData[0]?.location?.longitude ||
+                user?.location?.longitude,
               latitudeDelta: 0.0422,
               longitudeDelta: 0.0121,
             }}
+            onLongPress={e => handleLongPress(e)}
+            onPress={e => handlePress(e)}
             region={region}>
-            <Marker
-              coordinate={{
-                latitude: userMapLocation?.latitude,
-                longitude: userMapLocation?.longitude,
-              }}
-              title="{marker.title}"
-              description="{marker.description}">
-              <View style={styles.mapPointer}>
-                <Feather name={'map-pin'} color={Colors.success} size={22} />
-                <Text>{user.nick}</Text>
-              </View>
-            </Marker>
+            {userMapLocation?.latitude && userMapLocation?.longitude && (
+              <Marker
+                coordinate={{
+                  latitude: userMapLocation?.latitude,
+                  longitude: userMapLocation?.longitude,
+                }}
+                title="{marker.title}"
+                description="{marker.description}">
+                <View style={styles.mapPointer}>
+                  <Feather name={'map-pin'} color={Colors.success} size={22} />
+                  <Text>{user.nick}</Text>
+                </View>
+              </Marker>
+            )}
             {mapData.map(point => {
-              console.log('point', point);
-              console.log(
-                'point?.location?.latitude',
-                point?.location?.latitude,
-              );
-              console.log(
-                'point?.location?.longitude',
-                point?.location?.longitude,
-              );
-
               let color =
                 point.madeBy === 'app' ? Colors.error : Colors.success;
               let icon;
@@ -247,8 +307,6 @@ function Map() {
                   );
               }
 
-              console.log('color', color);
-              console.log('icon', icon);
               return (
                 <View key={point.id}>
                   <Marker

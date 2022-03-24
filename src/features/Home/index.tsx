@@ -70,8 +70,8 @@ function Home({navigation}) {
             {(!!event?.endDate || !!event?.startDate) && (
               <>
                 {!!dateCounter && <Text>{dateCounter}</Text>}
-                {diff < 9 && diff >= -4 && <Event event={event} />}
-                {diff >= 9 && (
+                {diff < 11 && diff >= -4 && <Event event={event} />}
+                {diff >= 11 && (
                   <>
                     <Text style={styles.upcomingEvent}>
                       {event?.type === 'tour'
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   event: {
     alignItems: 'center',
     justifyContent: 'flex-start',
-    marginTop: 100,
+    marginTop: 10,
     height: '100%',
   },
 });
