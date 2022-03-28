@@ -184,7 +184,7 @@ function Map() {
         <>
           <View style={styles.buttonContainer}>
             {userMapLocation?.latitude && userMapLocation?.longitude && (
-              <View style={styles.button}>
+              <View style={styles.buttonOuter}>
                 <Pressable
                   title="Refresh"
                   onPress={() => handleRegionChange('user')}
@@ -199,7 +199,7 @@ function Map() {
             )}
             {mapData.map(p => {
               return (
-                <View key={p.id} style={styles.button}>
+                <View key={p.id} style={styles.buttonOuter}>
                   <Pressable
                     onLongPress={() => handleButtonLongPress(p)}
                     onPress={() =>
@@ -207,7 +207,8 @@ function Map() {
                     }
                     style={{
                       color: p.madeBy === 'app' ? Colors.error : randomColor(),
-                      borderColor: randomColor(),
+                      borderColor:
+                        p.madeBy === 'app' ? Colors.error : randomColor(),
                       ...styles.button,
                     }}>
                     <Text>{p.title ? p.title : p.nick}</Text>
@@ -215,7 +216,7 @@ function Map() {
                 </View>
               );
             })}
-            <View style={styles.button}>
+            <View style={styles.buttonOuter}>
               <Pressable
                 title="Refresh"
                 onPress={() => fetchMapAndUserData()}
@@ -379,6 +380,13 @@ const styles = StyleSheet.create({
     height: 100,
   },
   button: {
+    borderWidth: 2,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 4,
+  },
+  buttonOuter: {
     borderWidth: 1,
     borderRadius: 10,
     justifyContent: 'center',
