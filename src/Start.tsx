@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {Alert} from 'react-native';
 import {useRecoilState} from 'recoil';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';

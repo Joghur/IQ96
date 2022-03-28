@@ -1,38 +1,40 @@
 import React, {memo, useEffect, useState} from 'react';
-import {Alert, StyleSheet, Text, View, Button, Dimensions} from 'react-native';
+import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useRecoilValue} from 'recoil';
 import MapView, {Marker} from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Geolocation from '@react-native-community/geolocation';
-import {GeoPoint} from 'firebase/firestore/lite';
 
+import AddPoi from './AddPoi';
 import Colors from '../../constants/colors';
 import {userState} from '../../utils/appState';
 import {CustomDivider} from '../../components/CustomDivider';
 import User from '../../types/User';
 import Banner from '../../components/Banner';
 import Location from '../../types/Location';
-import {fetchDocuments, saveData} from '../../utils/db';
-
-const randomColor = () => {
-  return '#' + Math.random().toString(16).substr(-6);
-};
+import {fetchDocuments} from '../../utils/db';
+import {randomColor} from '../../utils/colors';
 
 function Map() {
   const user: User = useRecoilValue(userState);
 
   const [userMapLocation, setUserMapLocation] = useState<Location>(null);
   const [mapData, setMapData] = useState<Location[]>([]);
+  const [newPoi, setNewPoi] = useState<Location[]>([]);
   const [error, setError] = useState(null);
   const [mapError, setMapError] = useState(null);
   const [region, setRegion] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [editable, setEditable] = useState(false);
+  const [editablePoi, setEditablePoi] = useState(false);
 
   console.log('userMapLocation', userMapLocation);
   console.log('mapData', mapData);
   console.log('mapData[0]', mapData[0]);
   console.log('user', user);
+  console.log('newPoi', newPoi);
 
   const geo_success = info => {
     setUserMapLocation((old: Location) => ({
@@ -65,10 +67,12 @@ function Map() {
   };
 
   useEffect(() => {
-    fetchMapAndUserData();
-    // users map location
-    Geolocation.getCurrentPosition(geo_success, geo_error, geo_options);
-  }, []);
+    if (!showModal) {
+      fetchMapAndUserData();
+      // users map location
+      Geolocation.getCurrentPosition(geo_success, geo_error, geo_options);
+    }
+  }, [showModal]);
 
   const handleRegionChange = point => {
     console.log('----------------------------handleRegionChange');
@@ -118,32 +122,16 @@ function Map() {
   };
 
   const handleLongPress = async e => {
-    console.log(e.nativeEvent);
     const location = e.nativeEvent.coordinate;
+    setNewPoi(location);
+    setShowModal(true);
+  };
 
-    const mapText = 'Den fede Fingerlicking';
-    const popupTitleAndButtonName = 'Fed bar';
-    const popupText = `Fed bar Set af ${user.nick}`;
-    const type = 'restaurant';
-    const madeBy = 'user';
-
-    const newMapObject = {
-      location: new GeoPoint(
-        Number(location.latitude),
-        Number(location.longitude),
-      ),
-      description: popupText,
-      title: popupTitleAndButtonName,
-      type,
-      madeBy,
-      nick: mapText,
-    };
-
-    const newMapObjectId = await saveData('map', newMapObject);
-
-    if (newMapObjectId.success) {
-      fetchMapAndUserData();
-    }
+  const handleButtonLongPress = async point => {
+    console.log('point', point);
+    setEditable(true);
+    setEditablePoi(point);
+    setShowModal(true);
   };
 
   if (error || mapError) {
@@ -181,152 +169,194 @@ function Map() {
   return (
     <>
       <Banner label={'Kort'} />
-      <View style={styles.buttonContainer}>
-        {userMapLocation?.latitude && userMapLocation?.longitude && (
-          <View style={styles.button}>
-            <Button title="Dig" onPress={() => handleRegionChange('user')} />
-          </View>
-        )}
-        {mapData.map(p => {
-          return (
-            <View key={p.id} style={styles.button}>
-              <Button
-                color={p.madeBy === 'app' ? Colors.error : randomColor()}
-                title={p.title ? p.title : p.nick}
-                onPress={() => handleRegionChange(p.title ? p.title : p.nick)}
-              />
-            </View>
-          );
-        })}
-        <View style={styles.button}>
-          <Button
-            color={randomColor()}
-            title="Refresh"
-            onPress={() => fetchMapAndUserData()}
+      {showModal && (
+        <>
+          <AddPoi
+            backLink={() => setShowModal(false)}
+            refresh={fetchMapAndUserData}
+            location={newPoi}
+            editable={editable}
+            editablePoi={editablePoi}
           />
-        </View>
-      </View>
-      <View style={styles.container}>
-        <CustomDivider />
-        {locationPresent && mapData && (
-          <MapView
-            style={{...StyleSheet.absoluteFillObject}}
-            initialRegion={{
-              latitude:
-                userMapLocation?.latitude ||
-                mapData[0]?.location?.latitude ||
-                user?.location?.latitude,
-              longitude:
-                userMapLocation?.longitude ||
-                mapData[0]?.location?.longitude ||
-                user?.location?.longitude,
-              latitudeDelta: 0.0422,
-              longitudeDelta: 0.0121,
-            }}
-            onLongPress={e => handleLongPress(e)}
-            onPress={e => handlePress(e)}
-            region={region}>
+        </>
+      )}
+      {!showModal && (
+        <>
+          <View style={styles.buttonContainer}>
             {userMapLocation?.latitude && userMapLocation?.longitude && (
-              <Marker
-                coordinate={{
-                  latitude: userMapLocation?.latitude,
-                  longitude: userMapLocation?.longitude,
-                }}
-                title="{marker.title}"
-                description="{marker.description}">
-                <View style={styles.mapPointer}>
-                  <Feather name={'map-pin'} color={Colors.success} size={22} />
-                  <Text>{user.nick}</Text>
-                </View>
-              </Marker>
+              <View style={styles.button}>
+                <Pressable
+                  title="Refresh"
+                  onPress={() => handleRegionChange('user')}
+                  style={{
+                    color: randomColor(),
+                    borderColor: 'blue',
+                    ...styles.button,
+                  }}>
+                  <Text>Dig</Text>
+                </Pressable>
+              </View>
             )}
-            {mapData.map(point => {
-              let color =
-                point.madeBy === 'app' ? Colors.error : Colors.success;
-              let icon;
-              let ShowIcon;
-              const size = 20;
-              switch (point.type) {
-                case 'hotel':
-                  icon = 'hotel';
-                  ShowIcon = <Icon name={icon} color={color} size={size} />;
-                  break;
-
-                case 'restaurant':
-                  icon = 'restaurant';
-                  ShowIcon = <Icon name={icon} color={color} size={size} />;
-                  break;
-
-                case 'user':
-                  color = randomColor();
-                  icon = 'location-pin';
-                  ShowIcon = <Icon name={icon} color={color} size={size} />;
-                  break;
-
-                case 'music':
-                  icon = 'music-note';
-                  ShowIcon = (
-                    <MaterialCommunityIcons
-                      name={icon}
-                      color={color}
-                      size={size}
-                    />
-                  );
-                  break;
-
-                case 'bar':
-                  icon = 'glass-cocktail';
-                  ShowIcon = (
-                    <MaterialCommunityIcons
-                      name={icon}
-                      color={color}
-                      size={size}
-                    />
-                  );
-                  break;
-
-                case 'sightseeing':
-                  icon = 'apple-keyboard-command';
-                  ShowIcon = (
-                    <MaterialCommunityIcons
-                      name={icon}
-                      color={color}
-                      size={size}
-                    />
-                  );
-                  break;
-
-                default:
-                  icon = 'question';
-                  ShowIcon = (
-                    <MaterialCommunityIcons
-                      name={icon}
-                      color={color}
-                      size={size}
-                    />
-                  );
-              }
-
+            {mapData.map(p => {
               return (
-                <View key={point.id}>
-                  <Marker
-                    coordinate={{
-                      latitude: point?.location?.latitude,
-                      longitude: point?.location?.longitude,
-                    }}
-                    title={point.title ? point.title : ''}
-                    description={point.description ? point.description : ''}>
-                    <View style={styles.mapPointer}>
-                      {ShowIcon}
-                      <Text>{point.nick}</Text>
-                    </View>
-                  </Marker>
+                <View key={p.id} style={styles.button}>
+                  <Pressable
+                    onLongPress={() => handleButtonLongPress(p)}
+                    onPress={() =>
+                      handleRegionChange(p.title ? p.title : p.nick)
+                    }
+                    style={{
+                      color: p.madeBy === 'app' ? Colors.error : randomColor(),
+                      borderColor: randomColor(),
+                      ...styles.button,
+                    }}>
+                    <Text>{p.title ? p.title : p.nick}</Text>
+                  </Pressable>
                 </View>
               );
             })}
-          </MapView>
-        )}
-      </View>
+            <View style={styles.button}>
+              <Pressable
+                title="Refresh"
+                onPress={() => fetchMapAndUserData()}
+                style={{
+                  color: randomColor(),
+                  borderColor: 'brown',
+                  ...styles.button,
+                }}>
+                <Text>Refresh</Text>
+              </Pressable>
+            </View>
+          </View>
+          <View style={styles.container}>
+            <CustomDivider />
+            {locationPresent && mapData && (
+              <MapView
+                style={{...StyleSheet.absoluteFillObject}}
+                initialRegion={{
+                  latitude:
+                    userMapLocation?.latitude ||
+                    mapData[0]?.location?.latitude ||
+                    user?.location?.latitude,
+                  longitude:
+                    userMapLocation?.longitude ||
+                    mapData[0]?.location?.longitude ||
+                    user?.location?.longitude,
+                  latitudeDelta: 0.0422,
+                  longitudeDelta: 0.0121,
+                }}
+                onLongPress={e => handleLongPress(e)}
+                onPress={e => handlePress(e)}
+                region={region}>
+                {userMapLocation?.latitude && userMapLocation?.longitude && (
+                  <Marker
+                    coordinate={{
+                      latitude: userMapLocation?.latitude,
+                      longitude: userMapLocation?.longitude,
+                    }}
+                    title="{marker.title}"
+                    description="{marker.description}">
+                    <View style={styles.mapPointer}>
+                      <Feather
+                        name={'map-pin'}
+                        color={Colors.success}
+                        size={22}
+                      />
+                      <Text>{user.nick}</Text>
+                    </View>
+                  </Marker>
+                )}
+                {mapData.map(point => {
+                  let color =
+                    point.madeBy === 'app' ? Colors.error : Colors.success;
+                  let icon;
+                  let ShowIcon;
+                  const size = 20;
+                  switch (point.type) {
+                    case 'hotel':
+                      icon = 'hotel';
+                      ShowIcon = <Icon name={icon} color={color} size={size} />;
+                      break;
+
+                    case 'restaurant':
+                      icon = 'restaurant';
+                      ShowIcon = <Icon name={icon} color={color} size={size} />;
+                      break;
+
+                    case 'user':
+                      color = randomColor();
+                      icon = 'location-pin';
+                      ShowIcon = <Icon name={icon} color={color} size={size} />;
+                      break;
+
+                    case 'music':
+                      icon = 'music-note';
+                      ShowIcon = (
+                        <MaterialCommunityIcons
+                          name={icon}
+                          color={color}
+                          size={size}
+                        />
+                      );
+                      break;
+
+                    case 'bar':
+                      icon = 'glass-cocktail';
+                      ShowIcon = (
+                        <MaterialCommunityIcons
+                          name={icon}
+                          color={color}
+                          size={size}
+                        />
+                      );
+                      break;
+
+                    case 'sightseeing':
+                      icon = 'apple-keyboard-command';
+                      ShowIcon = (
+                        <MaterialCommunityIcons
+                          name={icon}
+                          color={color}
+                          size={size}
+                        />
+                      );
+                      break;
+
+                    default:
+                      icon = 'question';
+                      ShowIcon = (
+                        <MaterialCommunityIcons
+                          name={icon}
+                          color={color}
+                          size={size}
+                        />
+                      );
+                  }
+
+                  return (
+                    <View key={point.id}>
+                      <Marker
+                        coordinate={{
+                          latitude: point?.location?.latitude,
+                          longitude: point?.location?.longitude,
+                        }}
+                        title={point.title ? point.title : ''}
+                        description={
+                          point.description ? point.description : ''
+                        }>
+                        <View style={styles.mapPointer}>
+                          {ShowIcon}
+                          <Text>{point.nick}</Text>
+                        </View>
+                      </Marker>
+                    </View>
+                  );
+                })}
+              </MapView>
+            )}
+          </View>
+        </>
+      )}
     </>
   );
 }
@@ -349,6 +379,10 @@ const styles = StyleSheet.create({
     height: 100,
   },
   button: {
-    width: Dimensions.get('window').width / 4,
+    borderWidth: 1,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 4,
   },
 });

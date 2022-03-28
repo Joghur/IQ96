@@ -11,48 +11,48 @@ import {CustomDivider} from '../../components/CustomDivider';
 import User from '../../types/User';
 import Banner from '../../components/Banner';
 import LocationButton from '../../components/LocationButton';
-import {queryDocuments, saveData, deleteDocument} from '../../utils/db';
+// import {queryDocuments, saveData, deleteDocument} from '../../utils/db';
 
 function Settings() {
   const user = useRecoilValue(userState) as User;
 
   console.log('user', user);
 
-  const handleAdd = async () => {
-    const u: User = {
-      isAdmin: true,
-      isBoard: false,
-      isSuperAdmin: false,
-      name: 'string',
-      nick: 'string',
-      title: 'string',
-      avatar: 'string',
-      uid: 'string',
-      locationId: 'string',
-    };
-    await saveData('users', u);
-    const loc = {
-      madeBy: 'app',
-      nick: 'Milling Hotel Windsor',
-      type: 'hotel',
-    };
-    await saveData('map', loc);
-  };
+  //   const handleAdd = async () => {
+  //     const u: User = {
+  //       isAdmin: true,
+  //       isBoard: false,
+  //       isSuperAdmin: false,
+  //       name: 'string',
+  //       nick: 'string',
+  //       title: 'string',
+  //       avatar: 'string',
+  //       uid: 'string',
+  //       locationId: 'string',
+  //     };
+  //     await saveData('users', u);
+  //     const loc = {
+  //       madeBy: 'app',
+  //       nick: 'Milling Hotel Windsor',
+  //       type: 'hotel',
+  //     };
+  //     await saveData('map', loc);
+  //   };
 
-  const handleResetChat = async () => {
-    const chats = await queryDocuments('chats', 'group', '==', 'general');
-    if (chats.success.length > 0) {
-      for (const message of chats.success) {
-        console.log('message', message.id);
-        deleteDocument('chats', message.id);
-      }
-    }
-  };
+  //   const handleResetChat = async () => {
+  //     const chats = await queryDocuments('chats', 'group', '==', 'general');
+  //     if (chats.success.length > 0) {
+  //       for (const message of chats.success) {
+  //         console.log('message', message.id);
+  //         deleteDocument('chats', message.id);
+  //       }
+  //     }
+  //   };
 
   return (
     <View>
+      <Banner label={'Indstillinger'} />
       <ScrollView contentContainerStyle={{flexGrow: 1}}>
-        <Banner label={'Indstillinger'} />
         <View style={styles.container}>
           {user && (
             <>
@@ -102,9 +102,9 @@ function Settings() {
             icon="power-off"
             onPress={() => logOut()}
           />
-          {user.isSuperAdmin && (
+          {/* {user.isSuperAdmin && (
             <>
-              <CustomDivider horizontalWidth={25} />
+              <CustomDivider  />
               <Text style={{...styles.bold, ...styles.textShadow}}>
                 Administration
               </Text>
@@ -128,7 +128,7 @@ function Settings() {
                 onPress={() => handleAdd()}
               />
             </>
-          )}
+          )} */}
         </View>
       </ScrollView>
     </View>
