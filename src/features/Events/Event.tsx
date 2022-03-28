@@ -87,7 +87,7 @@ export default EventPage;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    // alignItems: 'center',
     borderColor: Colors.dark,
     width: '90%',
     marginHorizontal: 5,
@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
   },
   headLine: {
     fontWeight: 'bold',
+    alignItems: 'flex-start',
   },
   //   eventContainer: {
   //     alignItems: 'center',

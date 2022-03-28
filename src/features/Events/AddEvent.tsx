@@ -153,27 +153,27 @@ const AddEvent: React.Component<{
 
   return (
     <View>
+      <View style={styles.buttonContainer}></View>
+      <View style={styles.submitButtonContainer}>
+        <Button
+          type="clear"
+          raised
+          title="Tilbage"
+          buttonStyle={styles.submitButton}
+          containerStyle={styles.submitButtonContainer}
+          onPress={() => backLink()}
+        />
+        <Button
+          type="clear"
+          raised
+          title={editable ? 'Opdatér begivenhed' : 'Tilføj begivenhed'}
+          titleStyle={styles.submitButtonTitle}
+          buttonStyle={styles.submitButton}
+          containerStyle={styles.submitButtonContainer}
+          onPress={() => handleSubmit()}
+        />
+      </View>
       <ScrollView>
-        <View style={styles.buttonContainer}></View>
-        <View style={styles.submitButtonContainer}>
-          <Button
-            type="clear"
-            raised
-            title="Tilbage"
-            buttonStyle={styles.submitButton}
-            containerStyle={styles.submitButtonContainer}
-            onPress={() => backLink()}
-          />
-          <Button
-            type="clear"
-            raised
-            title={editable ? 'Opdatér begivenhed' : 'Tilføj begivenhed'}
-            titleStyle={styles.submitButtonTitle}
-            buttonStyle={styles.submitButton}
-            containerStyle={styles.submitButtonContainer}
-            onPress={() => handleSubmit()}
-          />
-        </View>
         <View style={styles.headerTextContainer}>
           <Text h3 style={styles.headerText}>
             Tilføj ny begivenhed
