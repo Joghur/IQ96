@@ -1,9 +1,14 @@
-import React, {memo, useState, useCallback, useEffect} from 'react';
+import React, {
+  memo,
+  useState,
+  useCallback,
+  useLayoutEffect,
+  useEffect,
+} from 'react';
 import {Button, StyleSheet, View} from 'react-native';
 import {GiftedChat} from 'react-native-gifted-chat';
 import {useRecoilValue} from 'recoil';
 import 'dayjs/locale/da';
-import {v4 as uuidv4} from 'uuid';
 
 import Banner from '../../components/Banner';
 import Colors from '../../constants/colors';
@@ -51,6 +56,10 @@ function Chat() {
   const handleRefresh = () => {
     fetchMessages();
   };
+
+  useLayoutEffect(() => {
+    fetchMessages();
+  }, []);
 
   const onSend = useCallback((messages = []) => {
     console.log('onSend messages', messages);
