@@ -26,9 +26,14 @@ function Map() {
   const [error, setError] = useState(null);
   const [mapError, setMapError] = useState(null);
   const [region, setRegion] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState<
+    'add' | 'members' | 'iq96' | 'pois' | undefined
+  >(undefined);
   const [editable, setEditable] = useState(false);
-  const [editablePoi, setEditablePoi] = useState(false);
+  const [editablePoi, setEditablePoi] = useState(null);
+
+  const latitudeDelta = 0.005275;
+  const longitudeDelta = 0.0015125;
 
   console.log('userMapLocation', userMapLocation);
   console.log('mapData', mapData);
@@ -41,8 +46,8 @@ function Map() {
       ...old,
       latitude: info.coords.latitude,
       longitude: info.coords.longitude,
-      latitudeDelta: 0.0422,
-      longitudeDelta: 0.0121,
+      latitudeDelta,
+      longitudeDelta,
     }));
   };
   const geo_error = error => {
@@ -74,13 +79,27 @@ function Map() {
     }
   }, [showModal]);
 
+  const handleRegionChangeFromModal = loc => {
+    console.log('loc', loc);
+    console.log('editablePoi', editablePoi);
+    if (editablePoi?.location) {
+      setRegion(() => ({
+        latitude: editablePoi?.location.latitude,
+        longitude: editablePoi?.location.longitude,
+        latitudeDelta,
+        longitudeDelta,
+      }));
+      setShowModal(undefined);
+    }
+  };
+
   const handleRegionChange = point => {
     console.log('----------------------------handleRegionChange');
     const location = {
       latitude: null,
       longitude: null,
-      latitudeDelta: 0.0422,
-      longitudeDelta: 0.0121,
+      latitudeDelta,
+      longitudeDelta,
     };
     switch (point) {
       case 'user':
@@ -88,8 +107,8 @@ function Map() {
           ...location,
           latitude: userMapLocation?.latitude || user?.location?.latitude,
           longitude: userMapLocation?.longitude || user?.location?.longitude,
-          latitudeDelta: 0.0422,
-          longitudeDelta: 0.0121,
+          latitudeDelta,
+          longitudeDelta,
         }));
         break;
 
@@ -109,8 +128,8 @@ function Map() {
             ...location,
             latitude: poi[0].location.latitude,
             longitude: poi[0].location.longitude,
-            latitudeDelta: 0.0422,
-            longitudeDelta: 0.0121,
+            latitudeDelta,
+            longitudeDelta,
           }));
         }
         break;
@@ -119,6 +138,11 @@ function Map() {
 
   const handlePress = e => {
     console.log(e.nativeEvent);
+  };
+
+  const handleButtonPress = p => {
+    setShowModal('members');
+    setEditablePoi(() => p);
   };
 
   const handleLongPress = async e => {
@@ -169,7 +193,23 @@ function Map() {
   return (
     <>
       <Banner label={'Kort'} />
-      {showModal && (
+      {showModal === 'members' && (
+        <>
+          <View style={styles.buttonOuter}>
+            <Pressable
+              title="Refresh"
+              onPress={() => handleRegionChangeFromModal('poi')}
+              style={{
+                color: randomColor(),
+                borderColor: 'brown',
+                ...styles.button,
+              }}>
+              <Text>{editablePoi.nick}</Text>
+            </Pressable>
+          </View>
+        </>
+      )}
+      {showModal === 'add' && (
         <>
           <AddPoi
             backLink={() => setShowModal(false)}
@@ -202,9 +242,8 @@ function Map() {
                 <View key={p.id} style={styles.buttonOuter}>
                   <Pressable
                     onLongPress={() => handleButtonLongPress(p)}
-                    onPress={() =>
-                      handleRegionChange(p.title ? p.title : p.nick)
-                    }
+                    onPress={() => handleButtonPress(p)}
+                    //   handleRegionChange(p.title ? p.title : p.nick)
                     style={{
                       color: p.madeBy === 'app' ? Colors.error : randomColor(),
                       borderColor:
@@ -236,15 +275,17 @@ function Map() {
                 style={{...StyleSheet.absoluteFillObject}}
                 initialRegion={{
                   latitude:
+                    editablePoi?.location?.latitude ||
                     userMapLocation?.latitude ||
                     mapData[0]?.location?.latitude ||
                     user?.location?.latitude,
                   longitude:
+                    editablePoi?.location?.longitude ||
                     userMapLocation?.longitude ||
                     mapData[0]?.location?.longitude ||
                     user?.location?.longitude,
-                  latitudeDelta: 0.0422,
-                  longitudeDelta: 0.0121,
+                  latitudeDelta,
+                  longitudeDelta,
                 }}
                 onLongPress={e => handleLongPress(e)}
                 onPress={e => handlePress(e)}
