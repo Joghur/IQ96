@@ -135,8 +135,8 @@ android {
         applicationId "com.iq96"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 21
-        versionName "1.2.1"
+        versionCode 22
+        versionName "1.2.2"
     }
     splits {
         abi {   
