@@ -22,6 +22,9 @@ function Map() {
 
   const [userMapLocation, setUserMapLocation] = useState<Location>(null);
   const [mapData, setMapData] = useState<Location[]>([]);
+  const [iq96MapData, setIq96MapData] = useState<Location[]>([]);
+  const [memberMapData, setMemberMapData] = useState<Location[]>([]);
+  const [poisMapData, setPoisMapData] = useState<Location[]>([]);
   const [newPoi, setNewPoi] = useState<Location[]>([]);
   const [error, setError] = useState(null);
   const [mapError, setMapError] = useState(null);
@@ -32,14 +35,15 @@ function Map() {
   const [editable, setEditable] = useState(false);
   const [editablePoi, setEditablePoi] = useState(null);
 
-  const latitudeDelta = 0.005275;
-  const longitudeDelta = 0.0015125;
+  const latitudeDelta = 0.005274980135240526;
+  const longitudeDelta = 0.007509179413318634;
 
   console.log('userMapLocation', userMapLocation);
   console.log('mapData', mapData);
   console.log('mapData[0]', mapData[0]);
   console.log('user', user);
   console.log('newPoi', newPoi);
+  console.log('showModal', showModal);
 
   const geo_success = info => {
     setUserMapLocation((old: Location) => ({
@@ -78,6 +82,24 @@ function Map() {
       Geolocation.getCurrentPosition(geo_success, geo_error, geo_options);
     }
   }, [showModal]);
+
+  useEffect(() => {
+    const members = mapData
+      .filter(d => d?.type === 'user')
+      .sort((b, a) => b.nick > a.nick);
+
+    const iq96s = mapData
+      .filter(d => d?.madeBy === 'app')
+      .sort((b, a) => b.nick > a.nick);
+
+    const pois = mapData
+      .filter(d => d?.madeBy === 'user')
+      .sort((b, a) => b.nick > a.nick);
+    console.log('pois', pois);
+    setMemberMapData(() => members);
+    setIq96MapData(() => iq96s);
+    setPoisMapData(() => pois);
+  }, [mapData]);
 
   const handleRegionChangeFromModal = loc => {
     console.log('loc', loc);
@@ -141,21 +163,21 @@ function Map() {
   };
 
   const handleButtonPress = p => {
-    setShowModal('members');
     setEditablePoi(() => p);
+    handleRegionChangeFromModal();
   };
 
   const handleLongPress = async e => {
     const location = e.nativeEvent.coordinate;
     setNewPoi(location);
-    setShowModal(true);
+    setShowModal('add');
   };
 
   const handleButtonLongPress = async point => {
     console.log('point', point);
     setEditable(true);
     setEditablePoi(point);
-    setShowModal(true);
+    setShowModal('add');
   };
 
   if (error || mapError) {
@@ -193,19 +215,107 @@ function Map() {
   return (
     <>
       <Banner label={'Kort'} />
-      {showModal === 'members' && (
+      {showModal === 'iq96' && (
         <>
-          <View style={styles.buttonOuter}>
+          <View style={styles.buttonContainer}>
+            {iq96MapData.map(p => {
+              return (
+                <View key={p.id} style={styles.button}>
+                  <Pressable
+                    onLongPress={() => handleButtonLongPress(p)}
+                    onPress={() => handleButtonPress(p)}
+                    //   handleRegionChange(p.title ? p.title : p.nick)
+                    style={{
+                      borderColor: 'red',
+                      ...styles.button,
+                    }}>
+                    <Text style={styles.text}>
+                      {p.title ? p.title : p.nick}
+                    </Text>
+                  </Pressable>
+                </View>
+              );
+            })}
+          </View>
+          <View style={styles.cancelContainer}>
             <Pressable
-              title="Refresh"
-              onPress={() => handleRegionChangeFromModal('poi')}
+              onPress={() => setShowModal(undefined)}
               style={{
-                color: randomColor(),
-                borderColor: 'brown',
+                color: 'red',
+                borderColor: 'red',
                 ...styles.button,
               }}>
-              <Text>{editablePoi.nick}</Text>
+              <Text style={styles.text}>Fortryd</Text>
             </Pressable>
+          </View>
+        </>
+      )}
+      {showModal === 'members' && (
+        <View style={styles.buttonContainer}>
+          {memberMapData.map(p => {
+            return (
+              <View key={p.id} style={styles.button}>
+                <Pressable
+                  onLongPress={() => handleButtonLongPress(p)}
+                  onPress={() => handleButtonPress('member', p)}
+                  //   handleRegionChange(p.title ? p.title : p.nick)
+                  style={{
+                    color: p.madeBy === 'app' ? Colors.error : randomColor(),
+                    borderColor:
+                      p.madeBy === 'app' ? Colors.error : randomColor(),
+                    ...styles.button,
+                  }}>
+                  <Text style={styles.text}>{p.title ? p.title : p.nick}</Text>
+                </Pressable>
+              </View>
+            );
+          })}
+
+          <View style={styles.cancelContainer}>
+            <Pressable
+              onPress={() => setShowModal(undefined)}
+              style={{
+                color: 'red',
+                borderColor: 'red',
+                ...styles.button,
+              }}>
+              <Text style={styles.text}>Fortryd</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
+      {showModal === 'pois' && (
+        <>
+          <View style={styles.buttonContainer}>
+            {poisMapData.map(p => {
+              return (
+                <View key={p.id} style={styles.button}>
+                  <Pressable
+                    onLongPress={() => handleButtonLongPress(p)}
+                    onPress={() => handleButtonPress(p)}
+                    //   handleRegionChange(p.title ? p.title : p.nick)
+                    style={{
+                      borderColor: 'green',
+                      ...styles.button,
+                    }}>
+                    <Text style={styles.text}>
+                      {p.title ? p.title : p.nick}
+                    </Text>
+                  </Pressable>
+                </View>
+              );
+            })}
+            <View style={styles.cancelContainer}>
+              <Pressable
+                onPress={() => setShowModal(undefined)}
+                style={{
+                  color: 'red',
+                  borderColor: 'red',
+                  ...styles.button,
+                }}>
+                <Text style={styles.text}>Fortryd</Text>
+              </Pressable>
+            </View>
           </View>
         </>
       )}
@@ -226,7 +336,6 @@ function Map() {
             {userMapLocation?.latitude && userMapLocation?.longitude && (
               <View style={styles.buttonOuter}>
                 <Pressable
-                  title="Refresh"
                   onPress={() => handleRegionChange('user')}
                   style={{
                     color: randomColor(),
@@ -237,24 +346,39 @@ function Map() {
                 </Pressable>
               </View>
             )}
-            {mapData.map(p => {
-              return (
-                <View key={p.id} style={styles.buttonOuter}>
-                  <Pressable
-                    onLongPress={() => handleButtonLongPress(p)}
-                    onPress={() => handleButtonPress(p)}
-                    //   handleRegionChange(p.title ? p.title : p.nick)
-                    style={{
-                      color: p.madeBy === 'app' ? Colors.error : randomColor(),
-                      borderColor:
-                        p.madeBy === 'app' ? Colors.error : randomColor(),
-                      ...styles.button,
-                    }}>
-                    <Text>{p.title ? p.title : p.nick}</Text>
-                  </Pressable>
-                </View>
-              );
-            })}
+            <View style={styles.buttonOuter}>
+              <Pressable
+                onPress={() => setShowModal('iq96')}
+                style={{
+                  color: randomColor(),
+                  borderColor: 'red',
+                  ...styles.button,
+                }}>
+                <Text>IQ96</Text>
+              </Pressable>
+            </View>
+            <View style={styles.buttonOuter}>
+              <Pressable
+                onPress={() => setShowModal('members')}
+                style={{
+                  color: randomColor(),
+                  borderColor: 'blue',
+                  ...styles.button,
+                }}>
+                <Text>Med-Lemmer</Text>
+              </Pressable>
+            </View>
+            <View style={styles.buttonOuter}>
+              <Pressable
+                onPress={() => setShowModal('pois')}
+                style={{
+                  color: randomColor(),
+                  borderColor: 'green',
+                  ...styles.button,
+                }}>
+                <Text>Steder</Text>
+              </Pressable>
+            </View>
             <View style={styles.buttonOuter}>
               <Pressable
                 title="Refresh"
@@ -264,7 +388,7 @@ function Map() {
                   borderColor: 'brown',
                   ...styles.button,
                 }}>
-                <Text>Refresh</Text>
+                <Text>Opdater</Text>
               </Pressable>
             </View>
           </View>
@@ -287,6 +411,9 @@ function Map() {
                   latitudeDelta,
                   longitudeDelta,
                 }}
+                onRegionChangeComplete={e =>
+                  console.log(e.latitudeDelta, e.longitudeDelta)
+                }
                 onLongPress={e => handleLongPress(e)}
                 onPress={e => handlePress(e)}
                 region={region}>
@@ -415,10 +542,14 @@ const styles = StyleSheet.create({
   mapPointer: {
     alignItems: 'center',
   },
+  cancelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   buttonContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    height: 100,
+    justifyContent: 'center',
   },
   button: {
     borderWidth: 2,
@@ -433,5 +564,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 4,
+  },
+  text: {
+    textShadowColor: 'red',
+    fontSize: 18,
   },
 });
