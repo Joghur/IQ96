@@ -257,7 +257,7 @@ function Map() {
               <View key={p.id} style={styles.button}>
                 <Pressable
                   onLongPress={() => handleButtonLongPress(p)}
-                  onPress={() => handleButtonPress('member', p)}
+                  onPress={() => handleButtonPress(p)}
                   //   handleRegionChange(p.title ? p.title : p.nick)
                   style={{
                     color: p.madeBy === 'app' ? Colors.error : randomColor(),
