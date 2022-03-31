@@ -15,7 +15,7 @@ const LocationInfo = () => {
 
   const handleStartLocation = async () => {
     const lok = await getData('isLocationOn');
-    console.log('lok', lok);
+    // console.log('lok', lok);
     if (lok === null) {
       setIsLocationOn(false);
     } else {

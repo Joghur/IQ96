@@ -38,12 +38,12 @@ function Map() {
   const latitudeDelta = 0.005274980135240526;
   const longitudeDelta = 0.007509179413318634;
 
-  console.log('userMapLocation', userMapLocation);
-  console.log('mapData', mapData);
-  console.log('mapData[0]', mapData[0]);
-  console.log('user', user);
-  console.log('newPoi', newPoi);
-  console.log('showModal', showModal);
+  //   console.log('userMapLocation', userMapLocation);
+  //   console.log('mapData', mapData);
+  //   console.log('mapData[0]', mapData[0]);
+  //   console.log('user', user);
+  //   console.log('newPoi', newPoi);
+  //   console.log('showModal', showModal);
 
   const geo_success = info => {
     setUserMapLocation((old: Location) => ({
@@ -95,7 +95,7 @@ function Map() {
     const pois = mapData
       .filter(d => d?.madeBy === 'user')
       .sort((b, a) => b.nick > a.nick);
-    console.log('pois', pois);
+    // console.log('pois', pois);
     setMemberMapData(() => members);
     setIq96MapData(() => iq96s);
     setPoisMapData(() => pois);
@@ -103,11 +103,11 @@ function Map() {
 
   const handleRegionChangeFromModal = loc => {
     console.log('loc', loc);
-    console.log('editablePoi', editablePoi);
-    if (editablePoi?.location) {
+    // console.log('editablePoi', editablePoi);
+    if (loc?.location || editablePoi?.location) {
       setRegion(() => ({
-        latitude: editablePoi?.location.latitude,
-        longitude: editablePoi?.location.longitude,
+        latitude: loc?.location.latitude || editablePoi?.location.latitude,
+        longitude: loc?.location.longitude || editablePoi?.location.longitude,
         latitudeDelta,
         longitudeDelta,
       }));
@@ -115,48 +115,48 @@ function Map() {
     }
   };
 
-  const handleRegionChange = point => {
-    console.log('----------------------------handleRegionChange');
-    const location = {
-      latitude: null,
-      longitude: null,
-      latitudeDelta,
-      longitudeDelta,
-    };
-    switch (point) {
-      case 'user':
-        setRegion(() => ({
-          ...location,
-          latitude: userMapLocation?.latitude || user?.location?.latitude,
-          longitude: userMapLocation?.longitude || user?.location?.longitude,
-          latitudeDelta,
-          longitudeDelta,
-        }));
-        break;
+  //   const handleRegionChange = point => {
+  //     console.log('----------------------------handleRegionChange');
+  //     const location = {
+  //       latitude: null,
+  //       longitude: null,
+  //       latitudeDelta,
+  //       longitudeDelta,
+  //     };
+  //     switch (point) {
+  //       case 'user':
+  //         setRegion(() => ({
+  //           ...location,
+  //           latitude: userMapLocation?.latitude || user?.location?.latitude,
+  //           longitude: userMapLocation?.longitude || user?.location?.longitude,
+  //           latitudeDelta,
+  //           longitudeDelta,
+  //         }));
+  //         break;
 
-      default:
-        console.log('default');
-        const poi = mapData.filter(p => {
-          console.log('p 94 /------', p);
-          console.log('point', point);
-          if (p?.title) {
-            return p?.title === point;
-          }
-          return p?.nick === point;
-        });
-        console.log('poi', poi);
-        if (poi.length > 0) {
-          setRegion(() => ({
-            ...location,
-            latitude: poi[0].location.latitude,
-            longitude: poi[0].location.longitude,
-            latitudeDelta,
-            longitudeDelta,
-          }));
-        }
-        break;
-    }
-  };
+  //       default:
+  //         // console.log('default');
+  //         const poi = mapData.filter(p => {
+  //           console.log('p 94 /------', p);
+  //           console.log('point', point);
+  //           if (p?.title) {
+  //             return p?.title === point;
+  //           }
+  //           return p?.nick === point;
+  //         });
+  //         console.log('poi', poi);
+  //         if (poi.length > 0) {
+  //           setRegion(() => ({
+  //             ...location,
+  //             latitude: poi[0].location.latitude,
+  //             longitude: poi[0].location.longitude,
+  //             latitudeDelta,
+  //             longitudeDelta,
+  //           }));
+  //         }
+  //         break;
+  //     }
+  //   };
 
   const handlePress = e => {
     console.log(e.nativeEvent);
@@ -164,17 +164,20 @@ function Map() {
 
   const handleButtonPress = p => {
     setEditablePoi(() => p);
-    handleRegionChangeFromModal();
+    handleRegionChangeFromModal(p);
   };
 
   const handleLongPress = async e => {
     const location = e.nativeEvent.coordinate;
+    console.log('handleLongPress, location', location);
     setNewPoi(location);
+    setEditable(false);
+    setEditablePoi({});
     setShowModal('add');
   };
 
   const handleButtonLongPress = async point => {
-    console.log('point', point);
+    // console.log('point', point);
     setEditable(true);
     setEditablePoi(point);
     setShowModal('add');
@@ -288,6 +291,71 @@ function Map() {
         <>
           <View style={styles.buttonContainer}>
             {poisMapData.map(p => {
+              let color = 'green';
+              let icon;
+              let ShowIcon;
+              const size = 20;
+              switch (p.type) {
+                case 'hotel':
+                  icon = 'hotel';
+                  ShowIcon = <Icon name={icon} color={color} size={size} />;
+                  break;
+
+                case 'restaurant':
+                  icon = 'restaurant';
+                  ShowIcon = <Icon name={icon} color={color} size={size} />;
+                  break;
+
+                case 'user':
+                  color = randomColor();
+                  icon = 'location-pin';
+                  ShowIcon = <Icon name={icon} color={color} size={size} />;
+                  break;
+
+                case 'music':
+                  icon = 'music-note';
+                  ShowIcon = (
+                    <MaterialCommunityIcons
+                      name={icon}
+                      color={color}
+                      size={size}
+                    />
+                  );
+                  break;
+
+                case 'bar':
+                  icon = 'glass-cocktail';
+                  ShowIcon = (
+                    <MaterialCommunityIcons
+                      name={icon}
+                      color={color}
+                      size={size}
+                    />
+                  );
+                  break;
+
+                case 'sightseeing':
+                  icon = 'apple-keyboard-command';
+                  ShowIcon = (
+                    <MaterialCommunityIcons
+                      name={icon}
+                      color={color}
+                      size={size}
+                    />
+                  );
+                  break;
+
+                default:
+                  icon = 'question';
+                  ShowIcon = (
+                    <MaterialCommunityIcons
+                      name={icon}
+                      color={color}
+                      size={size}
+                    />
+                  );
+              }
+
               return (
                 <View key={p.id} style={styles.button}>
                   <Pressable
@@ -299,7 +367,7 @@ function Map() {
                       ...styles.button,
                     }}>
                     <Text style={styles.text}>
-                      {p.title ? p.title : p.nick}
+                      {ShowIcon} {p.title ? p.title : p.nick}
                     </Text>
                   </Pressable>
                 </View>
@@ -322,7 +390,10 @@ function Map() {
       {showModal === 'add' && (
         <>
           <AddPoi
-            backLink={() => setShowModal(false)}
+            backLink={p => {
+              handleRegionChangeFromModal(p);
+              setShowModal(false);
+            }}
             refresh={fetchMapAndUserData}
             location={newPoi}
             editable={editable}
@@ -336,7 +407,8 @@ function Map() {
             {userMapLocation?.latitude && userMapLocation?.longitude && (
               <View style={styles.buttonOuter}>
                 <Pressable
-                  onPress={() => handleRegionChange('user')}
+                  onPress={() => handleRegionChangeFromModal('user')}
+                  //   onPress={() => handleRegionChange('user')}
                   style={{
                     color: randomColor(),
                     borderColor: 'blue',
@@ -411,9 +483,6 @@ function Map() {
                   latitudeDelta,
                   longitudeDelta,
                 }}
-                onRegionChangeComplete={e =>
-                  console.log(e.latitudeDelta, e.longitudeDelta)
-                }
                 onLongPress={e => handleLongPress(e)}
                 onPress={e => handlePress(e)}
                 region={region}>

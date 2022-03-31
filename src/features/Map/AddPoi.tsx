@@ -67,10 +67,10 @@ const AddPoi: React.Component<{
     Object.keys(editablePoi).length > 0 ? editablePoi : initialPoi,
   );
 
-  console.log('poi', poi);
-  console.log('location', location);
-  console.log('editablePoi', editablePoi);
-  console.log('editable', editable);
+  //   console.log('poi-------------------------------', poi);
+  //   console.log('location', location);
+  //   console.log('editablePoi', editablePoi);
+  //   console.log('editable', editable);
 
   const handleChange = option => {
     setPoi(oldPoi => ({
@@ -81,7 +81,7 @@ const AddPoi: React.Component<{
 
   const handleSubmit = async () => {
     if (!poi.nick || !poi.type) {
-      Alert.alert('Du skal som minimum vælge en type og en titel');
+      Alert.alert('Du skal som minimum vælge en type og skrive en titel');
       return;
     }
     if (!poi.description.includes('Tilføjet')) {
@@ -103,7 +103,7 @@ const AddPoi: React.Component<{
     }
 
     if (backLink) {
-      backLink();
+      backLink(poi);
     }
   };
 
@@ -157,7 +157,7 @@ const AddPoi: React.Component<{
           />
         </View>
         <Input
-          value={poi.city}
+          value={poi.nick}
           placeholder={
             editablePoi ? editablePoi.nick : 'Indtast titel (vises på kortet)'
           }
@@ -168,7 +168,7 @@ const AddPoi: React.Component<{
           errorStyle={{color: 'black'}}
         />
         <Input
-          value={poi.city}
+          value={poi.title}
           placeholder={
             editablePoi
               ? editablePoi.title
@@ -181,10 +181,10 @@ const AddPoi: React.Component<{
           errorStyle={{color: 'black'}}
         />
         <Input
-          value={poi.city}
+          value={poi.description}
           placeholder={
             editablePoi
-              ? editablePoi.title
+              ? editablePoi.description
               : 'Indtast beskrivelse (vises i popup)'
           }
           onChangeText={value =>
