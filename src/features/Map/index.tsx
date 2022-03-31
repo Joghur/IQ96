@@ -115,48 +115,48 @@ function Map() {
     }
   };
 
-  //   const handleRegionChange = point => {
-  //     console.log('----------------------------handleRegionChange');
-  //     const location = {
-  //       latitude: null,
-  //       longitude: null,
-  //       latitudeDelta,
-  //       longitudeDelta,
-  //     };
-  //     switch (point) {
-  //       case 'user':
-  //         setRegion(() => ({
-  //           ...location,
-  //           latitude: userMapLocation?.latitude || user?.location?.latitude,
-  //           longitude: userMapLocation?.longitude || user?.location?.longitude,
-  //           latitudeDelta,
-  //           longitudeDelta,
-  //         }));
-  //         break;
+  const handleRegionChange = point => {
+    console.log('----------------------------handleRegionChange');
+    const location = {
+      latitude: null,
+      longitude: null,
+      latitudeDelta,
+      longitudeDelta,
+    };
+    switch (point) {
+      case 'user':
+        setRegion(() => ({
+          ...location,
+          latitude: userMapLocation?.latitude || user?.location?.latitude,
+          longitude: userMapLocation?.longitude || user?.location?.longitude,
+          latitudeDelta,
+          longitudeDelta,
+        }));
+        break;
 
-  //       default:
-  //         // console.log('default');
-  //         const poi = mapData.filter(p => {
-  //           console.log('p 94 /------', p);
-  //           console.log('point', point);
-  //           if (p?.title) {
-  //             return p?.title === point;
-  //           }
-  //           return p?.nick === point;
-  //         });
-  //         console.log('poi', poi);
-  //         if (poi.length > 0) {
-  //           setRegion(() => ({
-  //             ...location,
-  //             latitude: poi[0].location.latitude,
-  //             longitude: poi[0].location.longitude,
-  //             latitudeDelta,
-  //             longitudeDelta,
-  //           }));
-  //         }
-  //         break;
-  //     }
-  //   };
+      default:
+        // console.log('default');
+        const poi = mapData.filter(p => {
+          console.log('p 94 /------', p);
+          console.log('point', point);
+          if (p?.title) {
+            return p?.title === point;
+          }
+          return p?.nick === point;
+        });
+        console.log('poi', poi);
+        if (poi.length > 0) {
+          setRegion(() => ({
+            ...location,
+            latitude: poi[0].location.latitude,
+            longitude: poi[0].location.longitude,
+            latitudeDelta,
+            longitudeDelta,
+          }));
+        }
+        break;
+    }
+  };
 
   const handlePress = e => {
     console.log(e.nativeEvent);
@@ -407,8 +407,7 @@ function Map() {
             {userMapLocation?.latitude && userMapLocation?.longitude && (
               <View style={styles.buttonOuter}>
                 <Pressable
-                  onPress={() => handleRegionChangeFromModal('user')}
-                  //   onPress={() => handleRegionChange('user')}
+                  onPress={() => handleRegionChange('user')}
                   style={{
                     color: randomColor(),
                     borderColor: 'blue',
