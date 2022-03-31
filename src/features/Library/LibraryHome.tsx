@@ -5,13 +5,12 @@ import Banner from '../../components/Banner';
 import {ButtonWithIcon} from '../../components/ButtonWithIcon';
 import {fetchDocument} from '../../utils/db';
 import Colors from '../../constants/colors';
-
-const iq96Url = 'https://iq96.dk';
-const media = '/media';
-const songFolder = '/pdf/song/';
+import {urls} from './mediaUrl';
 
 function LibraryHome({navigation}: any) {
   const [song, setSong] = useState({});
+
+  const {iq96Url, media, songFolder} = urls;
 
   useEffect(() => {
     const fetchSong = async () => {
