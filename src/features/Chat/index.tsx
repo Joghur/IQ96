@@ -114,7 +114,7 @@ function Chat() {
       {settings?.baseUrl && settings?.media && (
         <View style={styles.container}>
           <Banner label={'Chat'} />
-          <Button onPress={handleRefresh} title="Refresh" />
+          <Button onPress={handleRefresh} title="Opdater" />
           <GiftedChat
             messages={messages}
             renderUsernameOnMessage
